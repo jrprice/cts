@@ -421,3 +421,38 @@ g.test('vec3')
     `;
     runShaderTest(t, wgsl, new Uint32Array([0x12345678, 0xabcdef01, 0x98765432, 0xdeadbeef]));
   });
+
+g.test('matCx3')
+  .desc(
+    `Test padding bytes are preserved when assigning to a variable of type mat3x3 (without a struct).
+    `
+  )
+  .params(u =>
+    u
+    .combine('columns', [2, 3, 4] as const)
+    .beginSubcases())
+  .fn(t => {
+    const cols = t.params.columns;
+    const wgsl = `
+      alias mat = mat${cols}x3<f32>;
+      @group(0) @binding(0) var<storage, read_write> buffer : mat;
+
+      @compute @workgroup_size(1)
+      fn main() {
+        var m : mat;
+        for (var c = 0u; c < ${cols}; c++) {
+          m[c] = vec3(f32(c*3 + 1), f32(c*3 + 2), f32(c*3 + 3));
+        }
+        buffer = m;
+      }
+    `;
+    let f_values = new Float32Array(16);
+    let u_values = new Uint32Array(f_values.buffer);
+    for (var c = 0; c < cols; c++) {
+      f_values[c*4 + 0] = c*3 + 1;
+      f_values[c*4 + 1] = c*3 + 2;
+      f_values[c*4 + 2] = c*3 + 3;
+      u_values[c*4 + 3] = 0xdeadbeef;
+    }
+    runShaderTest(t, wgsl, u_values.slice(0, cols * 4));
+  });
