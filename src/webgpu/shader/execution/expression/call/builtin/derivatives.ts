@@ -64,7 +64,7 @@ export function runDerivativeTest(
     }
   }
 
-  // Define a vertex shader that draws a triangle over the full viewport, and a fragment shader that
+  // Define a vertex shader that draws a quad over the full viewport, and a fragment shader that
   // calls the derivative builtin with a value loaded from that fragment's index into the storage
   // buffer (determined using the quad index and fragment position, as described above).
   const code = `
@@ -77,9 +77,12 @@ struct CaseInfo {
 fn vert(@builtin(vertex_index) vertex_idx: u32,
         @builtin(instance_index) instance_idx: u32) -> CaseInfo {
   const kVertices = array(
-    vec2f(-2, -2),
-    vec2f( 2, -2),
-    vec2f( 0,  2),
+    vec2f(-1, -1),
+    vec2f( 1, -1),
+    vec2f(-1,  1),
+    vec2f(-1,  1),
+    vec2f( 1, -1),
+    vec2f( 1,  1),
   );
   return CaseInfo(vec4(kVertices[vertex_idx], 0, 1), instance_idx);
 }
@@ -158,7 +161,7 @@ fn frag(info : CaseInfo) {
   pass.setPipeline(pipeline);
   pass.setBindGroup(0, group);
   for (let quad = 0; quad < cases.length / 2; quad++) {
-    pass.draw(3, 1, undefined, quad);
+    pass.draw(6, 1, undefined, quad);
   }
   pass.end();
   t.queue.submit([encoder.finish()]);
