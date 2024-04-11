@@ -92,8 +92,8 @@ fn vert(@builtin(vertex_index) vertex_idx: u32,
 
 @fragment
 fn frag(info : CaseInfo) {
-  let case_idx = u32(info.position.${dir === 'x' ? 'y' : 'x'});
-  let inv_idx = u32(info.position.${dir});
+  let case_idx = u32(info.position.${dir === 'x' ? 'y' : 'x'} - 0.5);
+  let inv_idx = u32(info.position.${dir} - 0.5);
   let index = info.quad_idx*4 + case_idx*2 + inv_idx;
   let input = inputs[index];
   ${non_uniform_discard ? 'if inv_idx == 0 { discard; }' : ''}
