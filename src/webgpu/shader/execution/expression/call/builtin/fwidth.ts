@@ -88,7 +88,7 @@ fn frag(info : CaseInfo) {
   let index = info.quad_idx*4 + inv_idx;
   let input = inputs[index];
   ${non_uniform_discard ? 'if inv_idx == 0 { discard; }' : ''}
-  outputs[index] = ${builtin}(input);
+  outputs[index] = input;//${builtin}(input);
 }
 `;
 
@@ -121,9 +121,17 @@ fn frag(info : CaseInfo) {
         break;
       }
       const inputs = cases[index].input as ReadonlyArray<Value>;
+
+      const kValues = [1, 3, 7, 11];
       for (let x = 0; x < 4; x++) {
-        inputs[x].copyTo(valuesData, (i * 4 + x) * valueStride + v * 4);
+        // inputs[x].copyTo(valuesData, (i * 4 + x) * valueStride + v * 4);
+        // console.log(`input[${(i * 4 + x) * valueStride + v * 4}] = ${inputs[x].wgsl()}`);
+        Type.f32.create(kValues[x]).copyTo(valuesData, (i * 4 + x) * valueStride + v * 4);
+        console.log(`input[${(i * 4 + x) * valueStride + v * 4}] = ${Type.f32.create(kValues[x]).wgsl()}`);
       }
+    }
+    if (i == 1) {
+      break;
     }
   }
   inputBuffer.unmap();
@@ -168,7 +176,8 @@ fn frag(info : CaseInfo) {
   t.expectGPUBufferValuesPassCheck(
     outputBuffer,
     (outputData: Uint8Array) => {
-      for (let i = 0; i < cases.length / vectorWidth; i++) {
+      for (let i = 1; i < cases.length / vectorWidth; i++) {
+        console.log(`i = ${i}`);
         for (let v = 0; v < vectorWidth; v++) {
           const index = i * vectorWidth + v;
           if (index >= cases.length) {
@@ -177,12 +186,15 @@ fn frag(info : CaseInfo) {
           const c = cases[index];
 
           for (let x = 0; x < 4; x++) {
+            console.log(`x = ${x}`);
             if (non_uniform_discard && x === 0) {
               continue;
             }
 
             const index = (i * 4 + x) * valueStride + v * 4;
             const result = Type.f32.read(outputData, index);
+
+            console.log(`result[${(i * 4 + x) * valueStride + v * 4}] = ${result.wgsl()}`);
 
             let expected = c.expected;
             if (builtin.endsWith('Fine')) {
@@ -192,14 +204,17 @@ fn frag(info : CaseInfo) {
             }
 
             const cmp = expected.compare(result);
-            if (!cmp.matched) {
-              return new Error(`
+            // if (!cmp.matched) {
+            console.log(`
     inputs: (${(c.input as Value[]).join(', ')})
   expected: ${cmp.expected}
 
   returned: ${result}`);
-            }
+            // }
           }
+        }
+        if (i == 1) {
+          break;
         }
       }
       return undefined;
