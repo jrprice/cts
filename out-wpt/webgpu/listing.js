@@ -1,4 +1,4 @@
-// AUTO-GENERATED - DO NOT EDIT. See src/common/tools/gen_listings.ts.
+// AUTO-GENERATED - DO NOT EDIT. See src/common/tools/gen_listings_and_webworkers.ts.
 
 export const listing = [
   {
@@ -22,9 +22,33 @@ export const listing = [
     "file": [
       "api",
       "operation",
+      "adapter",
+      "info"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "adapter",
+      "requestAdapter"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "adapter",
+      "requestDevice"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
       "async_ordering"
     ],
-    "readme": "Test ordering of async resolutions between the following promises (where there are constraints on the ordering).\nSpec issue: https://github.com/gpuweb/gpuweb/issues/962\n\nTODO: plan and implement\n- createReadyPipeline() (not sure if this actually has any ordering constraints)\n- cmdbuf.executionTime\n- device.popErrorScope()\n- device.lost\n- queue.onSubmittedWorkDone()\n- buffer.mapAsync()\n- shadermodule.compilationInfo()"
+    "readme": "Test ordering of async resolutions between promises returned by the following calls (and possibly\nbetween multiple of the same call), where there are constraints on the ordering.\nSpec issue: https://github.com/gpuweb/gpuweb/issues/962\n\nTODO: plan and implement\n- createReadyPipeline() (not sure if this actually has any ordering constraints)\n- cmdbuf.executionTime\n- device.popErrorScope()\n- device.lost\n- queue.onSubmittedWorkDone()\n- buffer.mapAsync()\n- shadermodule.getCompilationInfo()"
   },
   {
     "file": [
@@ -39,9 +63,24 @@ export const listing = [
       "api",
       "operation",
       "buffers",
+      "createBindGroup"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "buffers",
       "map"
-    ],
-    "description": "TODO: review and make sure these cases are covered:\n> - making sure writes/reads are to the right address (and get flushed)\n>     - TODO: various mapAsync offset/size\n>     - various getMappedRange offset/size\n>     - TODO: with non-overlapping getMappedRanges\n>     - TODO: with various TypedArray/DataView types\n>     - TODO: mapAsync is not a multiple of 8 but getMappedRange is, if that's allowed (probably won't be allowed, there's an issue in the spec about this)\n>     - x= {read, write, mappedAtCreation {mappable, non-mappable}}"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "buffers",
+      "map_ArrayBuffer"
+    ]
   },
   {
     "file": [
@@ -49,8 +88,7 @@ export const listing = [
       "operation",
       "buffers",
       "map_detach"
-    ],
-    "description": ""
+    ]
   },
   {
     "file": [
@@ -58,8 +96,7 @@ export const listing = [
       "operation",
       "buffers",
       "map_oom"
-    ],
-    "description": "TODO: review and make sure these cases are covered:\n> - mapAsync + getMappedRange\n>     - oom on buffer creation should be followed by validation-failure to mapAsync\n>     - ?\n> - createBufferMapped + getMappedRange\n>     - getMappedRange should always be allowed even if the buffer creation was oom\n>         - unless the range is so huge that an ArrayBuffer can't be created\n>\n> These tests should also test ArrayBuffer detaching (anytime the buffer mapping succeeds)\n> because the mapped ranges may be backed by different types of memory (shmem vs local mem vs real\n> mapped mem).\n>\n> TODO: currently test a huge number, but should also test smaller, but still very large allocations (like 128GiB)"
+    ]
   },
   {
     "file": [
@@ -67,8 +104,7 @@ export const listing = [
       "operation",
       "buffers",
       "threading"
-    ],
-    "description": "TODO:\n- Copy GPUBuffer to another thread while {pending, mapped mappedAtCreation} on {same,diff} thread\n- Destroy on one thread while {pending, mapped, mappedAtCreation, mappedAtCreation+unmap+mapped}\n  on another thread."
+    ]
   },
   {
     "file": [
@@ -76,8 +112,15 @@ export const listing = [
       "operation",
       "command_buffer",
       "basic"
-    ],
-    "description": "Basic tests."
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "command_buffer",
+      "clearBuffer"
+    ]
   },
   {
     "file": [
@@ -85,8 +128,7 @@ export const listing = [
       "operation",
       "command_buffer",
       "copyBufferToBuffer"
-    ],
-    "description": "copyBufferToBuffer operation tests"
+    ]
   },
   {
     "file": [
@@ -94,8 +136,15 @@ export const listing = [
       "operation",
       "command_buffer",
       "copyTextureToTexture"
-    ],
-    "description": "copyTexturetoTexture operation tests\n\n  TODO(jiawei.shao@intel.com): support all WebGPU texture formats."
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "command_buffer",
+      "image_copy"
+    ]
   },
   {
     "file": [
@@ -104,8 +153,7 @@ export const listing = [
       "command_buffer",
       "programmable",
       "state_tracking"
-    ],
-    "description": "Ensure state is set correctly. Tries to stress state caching (setting different states multiple\ntimes in different orders) for setBindGroup and setPipeline.\n\nTODO: for each programmable pass encoder {compute pass, render pass, render bundle encoder}\n- try setting states multiple times in different orders, check state is correct in draw/dispatch.\n    - Changing from pipeline A to B where both have the same layout except for {first,mid,last}\n      bind group index.\n    - Try with a pipeline that e.g. only uses bind group 1, or bind groups 0 and 2."
+    ]
   },
   {
     "file": [
@@ -114,7 +162,16 @@ export const listing = [
       "command_buffer",
       "queries"
     ],
-    "readme": "TODO: test the behavior of creating/using/resolving queries.\n- occlusion\n- pipeline statistics\n- timestamp\n- nested (e.g. timestamp or PS query inside occlusion query), if any such cases are valid. Try\n  writing to the same query set (at same or different indices), if valid. Check results make sense."
+    "readme": "TODO: test the behavior of creating/using/resolving queries.\n- timestamp\n- nested (e.g. timestamp inside occlusion query), if any such cases are valid. Try\n  writing to the same query set (at same or different indices), if valid. Check results make sense.\n- start a query (all types) with no draw calls"
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "command_buffer",
+      "queries",
+      "occlusionQuery"
+    ]
   },
   {
     "file": [
@@ -123,8 +180,7 @@ export const listing = [
       "command_buffer",
       "render",
       "dynamic_state"
-    ],
-    "description": "Tests of the behavior of the viewport/scissor/blend/reference states.\n\nTODO:\n- {viewport, scissor rect, blend color, stencil reference}:\n  Test rendering result with {various values}.\n    - Set the state in different ways to make sure it gets the correct value in the end: {\n        - state unset (= default)\n        - state explicitly set once to {default value, another value}\n        - persistence: [set, draw, draw] (fn should differentiate from [set, draw] + [draw])\n        - overwriting: [set(1), draw, set(2), draw] (fn should differentiate from [set(1), set(2), draw, draw])\n        - overwriting: [set(1), set(2), draw] (fn should differentiate from [set(1), draw] but not [set(2), draw])\n        - }"
+    ]
   },
   {
     "file": [
@@ -133,8 +189,7 @@ export const listing = [
       "command_buffer",
       "render",
       "state_tracking"
-    ],
-    "description": "Ensure state is set correctly. Tries to stress state caching (setting different states multiple\ntimes in different orders) for setIndexBuffer and setVertexBuffer.\nEquivalent tests for setBindGroup and setPipeline are in programmable/state_tracking.spec.ts.\nEquivalent tests for viewport/scissor/blend/reference are in render/dynamic_state.spec.ts\n\nTODO: plan and implement\n- try setting states multiple times in different orders, check state is correct in a draw call.\n    - setIndexBuffer: specifically test changing the format, offset, size, without changing the buffer\n    - setVertexBuffer: specifically test changing the offset, size, without changing the buffer\n- try changing the pipeline {before,after} the vertex/index buffers.\n  (In D3D12, the vertex buffer stride is part of SetVertexBuffer instead of the pipeline.)"
+    ]
   },
   {
     "file": [
@@ -142,8 +197,7 @@ export const listing = [
       "operation",
       "compute",
       "basic"
-    ],
-    "description": "Basic command buffer compute tests."
+    ]
   },
   {
     "file": [
@@ -151,16 +205,23 @@ export const listing = [
       "operation",
       "compute_pipeline",
       "entry_point_name"
-    ],
-    "description": "TODO:\n- Test some weird but valid values for entry point name (both module and pipeline creation\n  should succeed).\n- Test using each of many entry points in the module (should succeed).\n- Test using an entry point with the wrong stage (should fail)."
+    ]
   },
   {
     "file": [
       "api",
       "operation",
-      "copyBetweenLinearDataAndTexture"
-    ],
-    "description": "writeTexture + copyBufferToTexture + copyTextureToBuffer operation tests.\n\n* copy_with_various_rows_per_image_and_bytes_per_row: test that copying data with various bytesPerRow (including { ==, > } bytesInACompleteRow) and rowsPerImage (including { ==, > } copyExtent.height) values and minimum required bytes in copy works for every format. Also covers special code paths:\n  - bufferSize - offset < bytesPerImage * copyExtent.depth\n  - when bytesPerRow is not a multiple of 512 and copyExtent.depth > 1: copyExtent.depth % 2 == { 0, 1 }\n  - bytesPerRow == bytesInACompleteCopyImage\n\n* copy_with_various_offsets_and_data_sizes: test that copying data with various offset (including { ==, > } 0 and is/isn't power of 2) values and additional data paddings works for every format with 2d and 2d-array textures. Also covers special code paths:\n  - offset + bytesInCopyExtentPerRow { ==, > } bytesPerRow\n  - offset > bytesInACompleteCopyImage\n\n* copy_with_various_origins_and_copy_extents: test that copying slices of a texture works with various origin (including { origin.x, origin.y, origin.z } { ==, > } 0 and is/isn't power of 2) and copyExtent (including { copyExtent.x, copyExtent.y, copyExtent.z } { ==, > } 0 and is/isn't power of 2) values (also including {origin._ + copyExtent._ { ==, < } the subresource size of textureCopyView) works for all formats. origin and copyExtent values are passed as [number, number, number] instead of GPUExtent3DDict.\n\n* copy_various_mip_levels: test that copying various mip levels works for all formats. Also covers special code paths:\n  - the physical size of the subresouce is not equal to the logical size\n  - bufferSize - offset < bytesPerImage * copyExtent.depth and copyExtent needs to be clamped\n\n* copy_with_no_image_or_slice_padding_and_undefined_values: test that when copying a single row we can set any bytesPerRow value and when copying a single slice we can set rowsPerImage to 0. Also test setting offset, rowsPerImage, mipLevel, origin, origin.{x,y,z} to undefined.\n\n* TODO:\n  - add another initMethod which renders the texture\n  - test copyT2B with buffer size not divisible by 4 (not done because expectContents 4-byte alignment)\n  - add tests for 1d / 3d textures"
+      "compute_pipeline",
+      "overrides"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "device",
+      "all_limits_and_features"
+    ]
   },
   {
     "file": [
@@ -168,32 +229,22 @@ export const listing = [
       "operation",
       "device",
       "lost"
-    ],
-    "description": "Tests for GPUDevice.lost."
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "error_scope"
-    ],
-    "readme": "TODO: plan and implement\n- test very deeply nested error scopes, make sure errors go to the right place, e.g.\n    - validation, ..., validation, out-of-memory\n    - out-of-memory, validation, ..., validation\n    - out-of-memory, ..., out-of-memory, validation\n    - validation, out-of-memory, ..., out-of-memory\n- use error scopes on two different threads and make sure errors go to the right place\n- unhandled errors always go to the \"original\" device object\n    - test they go nowhere if the original was dropped (attemptGarbageCollection to make sure)"
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "fences"
-    ],
-    "description": "TODO: fences are removed; replace still-relevant tests with equivalents for (multiple?) queues"
+    ]
   },
   {
     "file": [
       "api",
       "operation",
       "labels"
-    ],
-    "description": "For every create function, the descriptor.label is carried over to the object.label.\n\nTODO: implement"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "limits",
+      "max_combined_limits"
+    ]
   },
   {
     "file": [
@@ -209,9 +260,8 @@ export const listing = [
       "operation",
       "memory_sync",
       "buffer",
-      "rw_and_wr"
-    ],
-    "description": "Memory Synchronization Tests for Buffer: read before write and read after write.\n\n- Create a single buffer and initialize it to 0, wait on the fence to ensure the data is initialized.\nWrite a number (say 1) into the buffer via render pass, compute pass, copy or writeBuffer.\nRead the data and use it in render, compute, or copy.\nWait on another fence, then call expectContents to verify the written buffer.\nThis is a read-after write test but if the write and read operations are reversed, it will be a read-before-write test.\n  - x= write op: {storage buffer in {compute, render, render-via-bundle}, t2b copy dst, b2b copy dst, writeBuffer}\n  - x= read op: {index buffer, vertex buffer, indirect buffer, uniform buffer, {readonly, readwrite} storage buffer in {compute, render, render-via-bundle}, b2b copy src, b2t copy src}\n  - x= read-write sequence: {read then write, write then read}\n  - if pass type is the same, x= {single pass, separate passes} (note: render has loose guarantees)\n  - if not single pass, x= writes in {same cmdbuf, separate cmdbufs, separate submits, separate queues}\n\nTODO: Tests with more than one buffer to try to stress implementations a little bit more."
+      "multiple_buffers"
+    ]
   },
   {
     "file": [
@@ -219,9 +269,8 @@ export const listing = [
       "operation",
       "memory_sync",
       "buffer",
-      "ww"
-    ],
-    "description": "Memory Synchronization Tests for Buffer: write after write.\n\n- Create one single buffer and initialize it to 0. Wait on the fence to ensure the data is initialized.\nWrite a number (say 1) into the buffer via render pass, compute pass, copy or writeBuffer.\nWrite another number (say 2) into the same buffer via render pass, compute pass, copy, or writeBuffer.\nWait on another fence, then call expectContents to verify the written buffer.\n  - x= 1st write type: {storage buffer in {compute, render, render-via-bundle}, t2b-copy, b2b-copy, writeBuffer}\n  - x= 2nd write type: {storage buffer in {compute, render, render-via-bundle}, t2b-copy, b2b-copy, writeBuffer}\n  - if pass type is the same, x= {single pass, separate passes} (note: render has loose guarantees)\n  - if not single pass, x= writes in {same cmdbuf, separate cmdbufs, separate submits, separate queues}\n\nTODO: Tests with more than one buffer to try to stress implementations a little bit more."
+      "single_buffer"
+    ]
   },
   {
     "file": [
@@ -229,9 +278,8 @@ export const listing = [
       "operation",
       "memory_sync",
       "texture",
-      "rw_and_wr"
-    ],
-    "description": "Memory Synchronization Tests for Texture: read before write and read after write.\n\nTODO"
+      "readonly_depth_stencil"
+    ]
   },
   {
     "file": [
@@ -239,17 +287,31 @@ export const listing = [
       "operation",
       "memory_sync",
       "texture",
-      "ww"
-    ],
-    "description": "Memory Synchronization Tests for Texture: write after write.\n\nTODO"
+      "same_subresource"
+    ]
   },
   {
     "file": [
       "api",
       "operation",
-      "onuncapturederror"
-    ],
-    "description": "Tests for GPUDevice.onuncapturederror."
+      "onSubmittedWorkDone"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "pipeline",
+      "default_layout"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "pipeline",
+      "pipeline_layout_created_with_null_bind_group_layout"
+    ]
   },
   {
     "file": [
@@ -257,8 +319,14 @@ export const listing = [
       "operation",
       "queue",
       "writeBuffer"
-    ],
-    "description": "TODO:\n- source.origin is unaligned\n- data given as ArrayBuffer\n- data given as each TypedArray variant"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "reflection"
+    ]
   },
   {
     "file": [
@@ -273,9 +341,16 @@ export const listing = [
       "api",
       "operation",
       "render_pass",
+      "clear_value"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "render_pass",
       "resolve"
-    ],
-    "description": "API Operation Tests for RenderPass StoreOp.\nTests a render pass with a resolveTarget resolves correctly for many combinations of:\n  - number of color attachments, some with and some without a resolveTarget\n  - renderPass storeOp set to {'store', 'clear'}\n  - resolveTarget mip level {0, >0} (TODO?: different mip level from colorAttachment)\n  - resolveTarget {2d array layer, TODO: 3d slice} {0, >0} with {2d, TODO: 3d} resolveTarget\n    (TODO?: different z from colorAttachment)\n  - TODO: test all renderable color formats\n  - TODO: test that any not-resolved attachments are rendered to correctly.\n  - TODO: test different loadOps\n  - TODO?: resolveTarget mip level {0, >0} (TODO?: different mip level from colorAttachment)\n  - TODO?: resolveTarget {2d array layer, TODO: 3d slice} {0, >0} with {2d, TODO: 3d} resolveTarget\n    (different z from colorAttachment)"
+    ]
   },
   {
     "file": [
@@ -283,8 +358,7 @@ export const listing = [
       "operation",
       "render_pass",
       "storeOp"
-    ],
-    "description": "API Operation Tests for RenderPass StoreOp.\n\n  Test Coverage:\n\n  - Tests that color and depth-stencil store operations {'clear', 'store'} work correctly for a\n    render pass with both a color attachment and depth-stencil attachment.\n      TODO: use depth24plus-stencil8\n\n  - Tests that store operations {'clear', 'store'} work correctly for a render pass with multiple\n    color attachments.\n      TODO: test with more interesting loadOp values\n\n  - Tests that store operations {'clear', 'store'} work correctly for a render pass with a color\n    attachment for:\n      - All renderable color formats\n      - mip level set to {'0', mip > '0'}\n      - array layer set to {'0', layer > '1'} for 2D textures\n      TODO: depth slice set to {'0', slice > '0'} for 3D textures\n\n  - Tests that store operations {'clear', 'store'} work correctly for a render pass with a\n    depth-stencil attachment for:\n      - All renderable depth-stencil formats\n      - mip level set to {'0', mip > '0'}\n      - array layer set to {'0', layer > '1'} for 2D textures\n      TODO: test depth24plus and depth24plus-stencil8 formats\n      TODO: test that depth and stencil aspects are set seperately\n      TODO: depth slice set to {'0', slice > '0'} for 3D textures\n      TODO: test with more interesting loadOp values"
+    ]
   },
   {
     "file": [
@@ -292,17 +366,7 @@ export const listing = [
       "operation",
       "render_pass",
       "storeop2"
-    ],
-    "description": "renderPass store op test that drawn quad is either stored or cleared based on storeop\n\nTODO: is this duplicated with api,operation,render_pass,storeOp?"
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "render_pipeline",
-      "alpha_to_coverage"
-    ],
-    "description": "TODO:\n- for sampleCount = 4, alphaToCoverageEnabled = true and various combinations of:\n    - rasterization masks\n    - increasing alpha values of the first color output including { < 0, = 0, = 1/16, = 2/16, ..., = 15/16, = 1, > 1 }\n    - alpha values of the second color output = { 0, 0.5, 1.0 }.\n- test that for a single pixel in { first, second } { color, depth, stencil } output the final sample mask is applied to it, moreover:\n    - if alpha is 0.0 or less then alpha to coverage mask is 0x0,\n    - if alpha is 1.0 or greater then alpha to coverage mask is 0xFFFFFFFF,\n    - that the number of bits in the alpha to coverage mask is non-decreasing,\n    - that the computation of alpha to coverage mask doesn't depend on any other color output than first,\n    - (not included in the spec): that once a sample is included in the alpha to coverage sample mask\n      it will be included for any alpha greater than or equal to the current value."
+    ]
   },
   {
     "file": [
@@ -310,17 +374,23 @@ export const listing = [
       "operation",
       "render_pipeline",
       "culling_tests"
-    ],
-    "description": "Test culling and rasterizaion state.\n\nTest coverage:\nTest all culling combinations of GPUFrontFace and GPUCullMode show the correct output.\n\nUse 2 triangles with different winding orders:\n\n- Test that the counter-clock wise triangle has correct output for:\n  - All FrontFaces (ccw, cw)\n  - All CullModes (none, front, back)\n  - All depth stencil attachment types (none, depth24plus, depth32float, depth24plus-stencil8)\n  - Some primitive topologies (triangle-list, TODO: triangle-strip)\n\n- Test that the clock wise triangle has correct output for:\n  - All FrontFaces (ccw, cw)\n  - All CullModes (none, front, back)\n  - All depth stencil attachment types (none, depth24plus, depth32float, depth24plus-stencil8)\n  - Some primitive topologies (triangle-list, TODO: triangle-strip)"
+    ]
   },
   {
     "file": [
       "api",
       "operation",
       "render_pipeline",
-      "entry_point_name"
-    ],
-    "description": "TODO:\n- Test some weird but valid values for entry point name (both module and pipeline creation\n  should succeed).\n- Test using each of many entry points in the module (should succeed).\n- Test using an entry point with the wrong stage (should fail)."
+      "overrides"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "render_pipeline",
+      "pipeline_output_targets"
+    ]
   },
   {
     "file": [
@@ -328,8 +398,7 @@ export const listing = [
       "operation",
       "render_pipeline",
       "primitive_topology"
-    ],
-    "description": "Test primitive topology rendering.\n\nDraw a primitive using 6 vertices with each topology and check if the pixel is covered.\n\nVertex sequence and coordinates are the same for each topology:\n  - Vertex buffer = [v1, v2, v3, v4, v5, v6]\n  - Topology = [point-list, line-list, line-strip, triangle-list, triangle-strip]\n\nTest locations are framebuffer coordinates:\n  - Pixel value { valid: green, invalid: black, format: 'rgba8unorm'}\n  - Test point is valid if the pixel value equals the covered pixel value at the test location.\n  - Primitive restart occurs for strips (line-strip and triangle-strip) between [v3, v4].\n\n  Topology: point-list         Valid test location(s)           Invalid test location(s)\n\n       v2    v4     v6         Every vertex.                    Line-strip locations.\n                                                                Triangle-list locations.\n                                                                Triangle-strip locations.\n\n   v1     v3     v5\n\n  Topology: line-list (3 lines)\n\n       v2    v4     v6         Center of three line segments:   Line-strip locations.\n      *      *      *          {v1,V2}, {v3,v4}, and {v4,v5}.   Triangle-list locations.\n     *      *      *                                            Triangle-strip locations.\n    *      *      *\n   v1     v3     v5\n\n  Topology: line-strip (5 lines)\n\n       v2    v4     v6\n       **    **     *\n      *  *  *  *   *           Line-list locations              Triangle-list locations.\n     *    **     **          + Center of two line segments:     Triangle-strip locations.\n    v1    v3     v5            {v2,v3} and {v4,v5}.\n                                                                With primitive restart:\n                                                                Line segment {v3, v4}.\n\n  Topology: triangle-list (2 triangles)\n\n      v2       v4    v6\n      **        ******         Center of two triangle(s):       Triangle-strip locations.\n     ****        ****          {v1,v2,v3} and {v4,v5,v6}.\n    ******        **\n   v1     v3      v5\n\n  Topology: triangle-strip (4 triangles)\n\n      v2        v4      v6\n      ** ****** ** ******      Triangle-list locations          None.\n     **** **** **** ****     + Center of two triangle(s):\n    ****** ** ****** **        {v2,v3,v4} and {v3,v4,v5}.       With primitive restart:\n   v1       v3        v5                                        Triangle {v2, v3, v4}\n                                                                and {v3, v4, v5}."
+    ]
   },
   {
     "file": [
@@ -337,8 +406,23 @@ export const listing = [
       "operation",
       "render_pipeline",
       "sample_mask"
-    ],
-    "description": "TODO:\n- for sampleCount = { 1, 4 } and various combinations of:\n    - rasterization mask = { 0, 1, 2, 3, 15 }\n    - sample mask = { 0, 1, 2, 3, 15, 30 }\n    - fragment shader output mask (SV_Coverage) = { 0, 1, 2, 3, 15, 30 }\n- test that final sample mask is the logical AND of all the\n  relevant masks -- meaning that the samples not included in the final mask are discarded\n  for all the { color outputs, depth tests, stencil operations } on any attachments.\n- [choosing 30 = 2 + 4 + 8 + 16 because the 5th bit should be ignored]"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "render_pipeline",
+      "vertex_only_render_pipeline"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "rendering",
+      "3d_texture_slices"
+    ]
   },
   {
     "file": [
@@ -346,17 +430,39 @@ export const listing = [
       "operation",
       "rendering",
       "basic"
-    ],
-    "description": "Basic command buffer rendering tests."
+    ]
   },
   {
     "file": [
       "api",
       "operation",
       "rendering",
-      "blending"
-    ],
-    "description": "Test blending results.\n\nTODO:\n- Test result for all combinations of args (make sure each case is distinguishable from others\n- Test underflow/overflow has consistent behavior\n- ?"
+      "color_target_state"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "rendering",
+      "depth"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "rendering",
+      "depth_bias"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "rendering",
+      "depth_clip_clamp"
+    ]
   },
   {
     "file": [
@@ -364,17 +470,7 @@ export const listing = [
       "operation",
       "rendering",
       "draw"
-    ],
-    "description": "Tests for the general aspects of draw/drawIndexed/drawIndirect/drawIndexedIndirect.\n\nTODO: plan and implement\n- draws (note bind group state is not tested here):\n    - various zero-sized draws\n    - draws with vertexCount not aligned to primitive topology (line-list or triangle-list) (should not error)\n    - index buffer is {unset, set}\n    - vertex buffers are {unset, set} (some that the pipeline uses, some it doesn't)\n      (note: to test this, the shader in the pipeline doesn't have to actually use inputs)\n    - x= {draw, drawIndexed, drawIndirect, drawIndexedIndirect}\n- ?"
-  },
-  {
-    "file": [
-      "api",
-      "operation",
-      "rendering",
-      "indexed_draw"
-    ],
-    "description": "Tests for the indexing-specific aspects of drawIndexed/drawIndexedIndirect.\n\nTODO: plan and implement\n- Test indexed draws with the combinations:\n  - Renderable cases:\n    - indexCount {=, >} the required points of primitive topology and\n      {<, =} the size of index buffer\n    - instanceCount is {1, largeish}\n    - {firstIndex, baseVertex, firstInstance} = 0\n    - firstIndex  {<, =} the size of index buffer\n  - Not renderable cases:\n    - indexCount = 0\n    - indexCount < the required points of primitive topology\n    - instanceCount = {undefined, 0}\n    - firstIndex out of buffer range\n    - firstIndex largeish\n  - x = {drawIndexed, drawIndexedIndirect}\n  - x = index formats\n- ?"
+    ]
   },
   {
     "file": [
@@ -382,8 +478,23 @@ export const listing = [
       "operation",
       "rendering",
       "indirect_draw"
-    ],
-    "description": "Tests for the indirect-specific aspects of drawIndirect/drawIndexedIndirect.\n\nTODO: plan and implement\n- indirect draws:\n    - indirectBuffer is {valid, invalid, destroyed, doesn't have usage)\n    - indirectOffset is {\n        - 0, 1, 4\n        - b.size - sizeof(args struct)\n        - b.size - sizeof(args struct) + min alignment (1 or 2 or 4)\n        - }\n    - x= {drawIndirect, drawIndexedIndirect}\n- ?"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "rendering",
+      "robust_access_index"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "rendering",
+      "stencil"
+    ]
   },
   {
     "file": [
@@ -391,8 +502,7 @@ export const listing = [
       "operation",
       "resource_init",
       "buffer"
-    ],
-    "description": "Test uninitialized buffers are initialized to zero when read\n(or read-written, e.g. with depth write or atomics).\n\nTODO"
+    ]
   },
   {
     "file": [
@@ -400,8 +510,7 @@ export const listing = [
       "operation",
       "resource_init",
       "texture_zero"
-    ],
-    "description": "Test uninitialized textures are initialized to zero when read.\n\nTODO:\n- 1d, 3d\n- test by sampling depth/stencil\n- test by copying out of stencil"
+    ]
   },
   {
     "file": [
@@ -409,8 +518,7 @@ export const listing = [
       "operation",
       "sampling",
       "anisotropy"
-    ],
-    "description": "Tests the behavior of anisotropic filtering.\n\nTODO:\nNote that anisotropic filtering is never guaranteed to occur, but we might be able to test some\nthings. If there are no guarantees we can issue warnings instead of failures. Ideas:\n  - No *more* than the provided maxAnisotropy samples are used, by testing how many unique\n    sample values come out of the sample operation.\n  - Check anisotropy is done in the correct direciton (by having a 2D gradient and checking we get\n    more of the color in the correct direction)."
+    ]
   },
   {
     "file": [
@@ -418,26 +526,47 @@ export const listing = [
       "operation",
       "sampling",
       "filter_mode"
-    ],
-    "description": "Tests the behavior of different filtering modes in minFilter/magFilter/mipmapFilter.\n\nTODO:\n- Test exact sampling results with small tolerance. Tests should differentiate between different\n  values for all three filter modes to make sure none are missed or incorrect in implementations.\n- (Likely unnecessary with the above.) Test exactly the expected number of samples are used.\n  Test this by setting up a rendering and asserting how many different shades result."
+    ]
   },
   {
     "file": [
       "api",
       "operation",
       "sampling",
-      "lod_clamp"
-    ],
-    "description": "Tests the behavior of LOD clamping (lodMinClamp, lodMaxClamp).\n\nTODO:\n- Write a test that can test the exact clamping behavior\n- Test a bunch of values, including very large/small ones."
+      "sampler_texture"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "shader_module",
+      "compilation_info"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "storage_texture",
+      "read_only"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "operation",
+      "storage_texture",
+      "read_write"
+    ]
   },
   {
     "file": [
       "api",
       "operation",
       "texture_view",
-      "read"
-    ],
-    "description": "Test the result of reading textures through texture views with various options.\n\nAll x= every possible view read method: {\n  - {unfiltered, filtered (if valid), comparison (if valid)} sampling\n  - storage read {vertex, fragment, compute}\n  - no-op render pass that loads and then stores\n  - depth comparison\n  - stencil comparison\n}\nTODO: Write helper for this if not already available (see resource_init, buffer_sync_test for related code)."
+      "format_reinterpretation"
+    ]
   },
   {
     "file": [
@@ -445,8 +574,7 @@ export const listing = [
       "operation",
       "texture_view",
       "write"
-    ],
-    "description": "Test the result of writing textures through texture views with various options.\n\nAll x= every possible view write method: {\n  - storage write {fragment, compute}\n  - render pass store\n  - render pass resolve\n}\nTODO: Write helper for this if not already available (see resource_init, buffer_sync_test for related code)."
+    ]
   },
   {
     "file": [
@@ -454,16 +582,14 @@ export const listing = [
       "operation",
       "threading"
     ],
-    "readme": "Tests for behavior with multiple threads (main thread + workers).\n\nTODO: plan and implement\n- Try postMessage'ing an object of every type (to same or different thread)\n    - {main -> main, main -> worker, worker -> main, worker1 -> worker1, worker1 -> worker2}\n    - through {global postMessage, MessageChannel}\n    - {in, not in} transferrable object list, when valid\n- Short tight loop doing many of an action from two threads at the same time\n    - e.g. {create {buffer, texture, shader, pipeline}}"
+    "readme": "Tests for behavior with multiple threads (main thread + workers).\n\nTODO: plan and implement\n- 'postMessage'\n  Try postMessage'ing an object of every type (to same or different thread)\n    - {main -> main, main -> worker, worker -> main, worker1 -> worker1, worker1 -> worker2}\n    - through {global postMessage, MessageChannel}\n    - {in, not in} transferrable object list, when valid\n- 'concurrency'\n  Short tight loop doing many of an action from two threads at the same time\n    - e.g. {create {buffer, texture, shader, pipeline}}"
   },
   {
     "file": [
       "api",
       "operation",
-      "vertex_state",
-      "basic"
-    ],
-    "description": "- Baseline tests checking vertex/instance IDs, with:\n    - No vertexState at all (i.e. no vertex buffers)\n    - One vertex buffer with no attributes"
+      "uncapturederror"
+    ]
   },
   {
     "file": [
@@ -471,8 +597,7 @@ export const listing = [
       "operation",
       "vertex_state",
       "correctness"
-    ],
-    "description": "- Tests that render N points, using a generated pipeline with:\n  (1) a vertex shader that has necessary vertex inputs and a static array of\n  expected data (as indexed by vertexID + instanceID * verticesPerInstance),\n  which checks they're equal and sends the bool to the fragment shader;\n  (2) a fragment shader which writes the result out to a storage buffer\n  (or renders a red/green fragment if we can't do fragmentStoresAndAtomics,\n  maybe with some depth or stencil test magic to do the '&&' of all fragments).\n    - Fill some GPUBuffers with testable data, e.g.\n      [[1.0, 2.0, ...], [-1.0, -2.0, ...]], for use as vertex buffers.\n    - With no/trivial indexing\n        - Either non-indexed, or indexed with a passthrough index buffer ([0, 1, 2, ...])\n            - Of either format\n            - If non-indexed, index format has no effect\n        - Vertex data is read from the buffer correctly\n            - setVertexBuffer offset\n            - Several vertex buffers with several attributes each\n                - Two setVertexBuffers pointing at the same GPUBuffer (if possible)\n                    - Overlapping, non-overlapping\n                - Overlapping attributes (iff that's supposed to work)\n                - Overlapping vertex buffer elements\n                  (an attribute offset + its size > arrayStride)\n                  (iff that's supposed to work)\n                - Zero, one, or two vertex buffers have stepMode \"instance\"\n                - Discontiguous vertex buffer slots, e.g.\n                  [1, some large number (API doesn't practically allow huge numbers here)]\n                - Discontiguous shader locations, e.g.\n                  [2, some large number (max if possible)]\n             - Bind everything possible up to limits\n                 - Also with maxed out attributes?\n             - x= all vertex formats\n        - Data is fed into the shader correctly\n            - Swap attribute order (should have no effect)\n            - Vertex formats x shader input types (should all be valid, I think?)\n        - Maybe a test of one buffer with two attributes, with every possible\n          pair of vertex formats\n    - With indexing. For each index format:\n        - Indices are read from the buffer correctly\n            - setIndexBuffer offset\n        - For each vertex format:\n            - Basic test with several vertex buffers and several attributes"
+    ]
   },
   {
     "file": [
@@ -480,8 +605,7 @@ export const listing = [
       "operation",
       "vertex_state",
       "index_format"
-    ],
-    "description": "Test indexing, index format and primitive restart."
+    ]
   },
   {
     "file": [
@@ -501,18 +625,9 @@ export const listing = [
     "file": [
       "api",
       "validation",
-      "attachment_compatibility"
-    ],
-    "description": "Validation for attachment compatibility between render passes, bundles, and pipelines\n\nTODO: Add sparse color attachment compatibility test when defined by specification"
-  },
-  {
-    "file": [
-      "api",
-      "validation",
       "buffer",
       "create"
-    ],
-    "description": "Tests for validation in createBuffer."
+    ]
   },
   {
     "file": [
@@ -520,8 +635,7 @@ export const listing = [
       "validation",
       "buffer",
       "destroy"
-    ],
-    "description": "Destroying a buffer more than once is allowed."
+    ]
   },
   {
     "file": [
@@ -529,8 +643,7 @@ export const listing = [
       "validation",
       "buffer",
       "mapping"
-    ],
-    "description": "Validation tests for GPUBuffer.mapAsync, GPUBuffer.unmap and GPUBuffer.getMappedRange.\n\nTODO: review existing tests and merge with this plan:\n> - {mappedAtCreation, await mapAsync}\n>     - -> x = getMappedRange\n>     - check x.size == mapping size\n>     - -> noawait mapAsync\n>     - check x.size == mapping size\n>     - -> await\n>     - check x.size == mapping size\n>     - -> unmap\n>     - check x.size == 0\n>     - -> getMappedRange (should fail)\n> - await mapAsync -> await mapAsync -> getMappedRange\n> - {mappedAtCreation, await mapAsync} -> unmap -> unmap\n> - x = noawait mapAsync -> y = noawait mapAsync\n>     - -> getMappedRange (should fail)\n>     - -> await x\n>     - -> getMappedRange\n>     - -> shouldReject(y)\n> - noawait mapAsync -> unmap\n> - {mappedAtCreation, await mapAsync} -> x = getMappedRange -> unmap -> await mapAsync(subrange) -> y = getMappedRange\n>     - check x.size == 0, y.size == mapping size"
+    ]
   },
   {
     "file": [
@@ -538,8 +651,7 @@ export const listing = [
       "validation",
       "buffer",
       "threading"
-    ],
-    "description": "TODO:\n- Try to map on one thread while {pending, mapped, mappedAtCreation, mappedAtCreation+unmap+mapped}\n  on another thread.\n- Invalid to postMessage a mapped range's ArrayBuffer or ArrayBufferView\n  {with, without} it being in the transfer array.\n- Copy GPUBuffer to another thread while {pending, mapped mappedAtCreation} on {same,diff} thread\n  (valid), then try to map on that thread (invalid)"
+    ]
   },
   {
     "file": [
@@ -548,7 +660,7 @@ export const listing = [
       "capability_checks",
       "features"
     ],
-    "readme": "Test every method or option that shouldn't be valid without a feature enabled.\n\n- x= that feature {enabled, disabled}\n\nOne file for each feature name.\n\nTODO: implement"
+    "readme": "Test every method or option that shouldn't be allowed without a feature enabled.\nIf the feature is not enabled, any use of an enum value added by a feature must be an\n*exception*, per <https://github.com/gpuweb/gpuweb/blob/main/design/ErrorConventions.md>.\n\n- x= that feature {enabled, disabled}\n\nGenerally one file for each feature name, but some may be grouped (e.g. one file for all optional\nquery types, one file for all optional texture formats).\n\nTODO: implement"
   },
   {
     "file": [
@@ -556,9 +668,44 @@ export const listing = [
       "validation",
       "capability_checks",
       "features",
-      "queries"
-    ],
-    "description": ""
+      "clip_distances"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features",
+      "query_types"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features",
+      "texture_formats"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features",
+      "texture_formats_tier1"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "features",
+      "texture_formats_tier2"
+    ]
   },
   {
     "file": [
@@ -567,97 +714,386 @@ export const listing = [
       "capability_checks",
       "limits"
     ],
-    "readme": "Test everything that shouldn't be valid without a higher-than-specified limit.\n\n- x= that limit {default, max supported (if different), lower than default (TODO: if allowed)}\n\nOne file for each limit name.\n\nTODO: implement"
+    "readme": "Test everything that shouldn't be valid without a higher-than-specified limit.\n\n- x= that limit {default, max supported (if different), lower than default (TODO: if allowed)}\n\nOne file for each limit name.\n\nTODO: implement\nTODO: Also test that \"alignment\" limits require a power of 2."
   },
   {
     "file": [
       "api",
       "validation",
-      "copy_between_linear_data_and_texture"
-    ],
-    "readme": "writeTexture + copyBufferToTexture + copyTextureToBuffer validation tests.\n\nTest coverage:\n* resource usages:\n\t- texture_usage_must_be_valid: for GPUTextureUsage::COPY_SRC, GPUTextureUsage::COPY_DST flags.\n\t- TODO: buffer_usage_must_be_valid\n\n* textureCopyView:\n\t- texture_must_be_valid: for valid, destroyed, error textures.\n\t- sample_count_must_be_1: for sample count 1 and 4.\n\t- mip_level_must_be_in_range: for various combinations of mipLevel and mipLevelCount.\n\t- texel_block_alignment_on_origin: for all formats and coordinates.\n\n* bufferCopyView:\n\t- TODO: buffer_must_be_valid\n\t- TODO: bytes_per_row_alignment\n\n* linear texture data:\n\t- bound_on_rows_per_image: for various combinations of copyDepth (1, >1), copyHeight, rowsPerImage.\n\t- offset_plus_required_bytes_in_copy_overflow\n\t- required_bytes_in_copy: testing minimal data size and data size too small for various combinations of bytesPerRow, rowsPerImage, copyExtent and offset. for the copy method, bytesPerRow is computed as bytesInACompleteRow aligned to be a multiple of 256 + bytesPerRowPadding * 256.\n\t- texel_block_alignment_on_rows_per_image: for all formats.\n\t- texel_block_alignment_on_offset: for all formats.\n\t- bound_on_bytes_per_row: for all formats and various combinations of bytesPerRow and copyExtent. for writeTexture, bytesPerRow is computed as (blocksPerRow * blockWidth * bytesPerBlock + additionalBytesPerRow) and copyExtent.width is computed as copyWidthInBlocks * blockWidth. for the copy methods, both values are mutliplied by 256.\n\t- bound_on_offset: for various combinations of offset and dataSize.\n\n* texture copy range:\n\t- 1d_texture: copyExtent.height isn't 1, copyExtent.depth isn't 1.\n\t- texel_block_alignment_on_size: for all formats and coordinates.\n\t- texture_range_conditons: for all coordinate and various combinations of origin, copyExtent, textureSize and mipLevel.\n\nTODO: more test coverage for 1D and 3D textures."
+      "capability_checks",
+      "limits",
+      "maxBindGroups"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
-      "copy_between_linear_data_and_texture",
-      "copyBetweenLinearDataAndTexture_dataRelated"
-    ],
-    "description": ""
+      "capability_checks",
+      "limits",
+      "maxBindGroupsPlusVertexBuffers"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
-      "copy_between_linear_data_and_texture",
-      "copyBetweenLinearDataAndTexture_textureRelated"
-    ],
-    "description": ""
+      "capability_checks",
+      "limits",
+      "maxBindingsPerBindGroup"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxBufferSize"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxColorAttachmentBytesPerSample"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxColorAttachments"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxComputeInvocationsPerWorkgroup"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxComputeWorkgroupSizeX"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxComputeWorkgroupSizeY"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxComputeWorkgroupSizeZ"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxComputeWorkgroupStorageSize"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxComputeWorkgroupsPerDimension"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxDynamicStorageBuffersPerPipelineLayout"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxDynamicUniformBuffersPerPipelineLayout"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxInterStageShaderVariables"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxSampledTexturesPerShaderStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxSamplersPerShaderStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageBufferBindingSize"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageBuffersInFragmentStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageBuffersInVertexStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageBuffersPerShaderStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageTexturesInFragmentStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageTexturesInVertexStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxStorageTexturesPerShaderStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxTextureArrayLayers"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxTextureDimension1D"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxTextureDimension2D"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxTextureDimension3D"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxUniformBufferBindingSize"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxUniformBuffersPerShaderStage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxVertexAttributes"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxVertexBufferArrayStride"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "maxVertexBuffers"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "minStorageBufferOffsetAlignment"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "capability_checks",
+      "limits",
+      "minUniformBufferOffsetAlignment"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "compute_pipeline"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "createBindGroup"
-    ],
-    "description": "createBindGroup validation tests.\n\nTODO: review existing tests, write descriptions, and make sure tests are complete."
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "createBindGroupLayout"
-    ],
-    "description": "createBindGroupLayout validation tests.\n\nTODO: review existing tests, write descriptions, and make sure tests are complete."
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "createPipelineLayout"
-    ],
-    "description": "createPipelineLayout validation tests.\n\nTODO: review existing tests, write descriptions, and make sure tests are complete."
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "createRenderPipeline"
-    ],
-    "description": "createRenderPipeline validation tests.\n\nTODO: review existing tests, write descriptions, and make sure tests are complete.\n      Make sure the following is covered. Consider splitting the file if too large/disjointed.\n> - various attachment problems\n>\n> - interface matching between vertex and fragment shader\n>     - superset, subset, etc.\n>\n> - vertexStage {valid, invalid}\n> - fragmentStage {valid, invalid}\n> - primitiveTopology all possible values\n> - rasterizationState various values\n> - sampleCount {0, 1, 3, 4, 8, 16, 1024}\n> - sampleMask {0, 0xFFFFFFFF}\n> - alphaToCoverage:\n>     - alphaToCoverageEnabled is { true, false } and sampleCount { = 1, = 4 }.\n>       The only failing case is (true, 1).\n>     - output SV_Coverage semantics is statically used by fragmentStage and\n>       alphaToCoverageEnabled is { true (fails), false (passes) }.\n>     - sampleMask is being used and alphaToCoverageEnabled is { true (fails), false (passes) }."
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "createSampler"
-    ],
-    "description": "createSampler validation tests."
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "createTexture"
-    ],
-    "description": "createTexture validation tests.\n\nTODO: review existing tests and merge with this plan:\n> All x= every texture format\n>\n> - {any dimension, mipLevelCount} = 0\n>     - x= every texture format\n> - sampleCount = {0, 1, 4, 8, 16, 256} with format/dimension that supports multisample\n>     - x= every texture format\n> - sampleCount = {1, 4}\n>     - with format that supports multisample, with all possible dimensions\n>     - with dimension that support multisample, with all possible formats\n>     - with format-dimension that support multisample, with {mipLevelCount, array layer count} = {1, 2}\n> - 1d, {width, height, depth} > whatever the max is\n>     - height max is 1 (unless 1d-array is added)\n>     - depth max is 1\n>     - x= every texture format\n> - 2d, {width, height, depth} > whatever the max is\n>     - depth (array layers) max differs from width/height\n>     - x= every texture format\n> - 3d, {width, height, depth} > whatever the max is\n>     - x= every texture format\n> - usage flags\n>     - {0, ... each single usage flag}\n>     - x= every texture format\n> - every possible pair of usage flags\n>     - with one common texture format\n> - any other conditions from the spec\n> - ...?\n\nTODO: move destroy tests out of this file"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "createView"
-    ],
-    "description": "createView validation tests.\n\nTODO: review existing tests and merge with this plan:\n> All x= every texture format for the underlying texture\n>\n> - view format doesn't match/isn't compatible\n>     - with/without flag set <- I don't think this flag exists yet\n>     - x= every possible view format\n> - dimension isn't one of the following compatible options:\n>     - texture 1d -> view 1d\n>     - texture 2d -> view 2d, 2d-array, cube, cube-array\n>     - texture 3d -> view 3d\n> - {cube, cube-array} not enough layers\n> - all aspects\n>     - \"depth-only\" only allowed for D and DS\n>     - \"stencil-only\" only allowed for S and DS\n>     - \"all\" allowed for any format\n> - baseMipLevel+mipLevelCount various values {in, out of} range\n> - baseArrayLayer+arrayLayerCount various values {in, out of} range"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
-      "create_pipeline"
-    ],
-    "description": "TODO:\nFor {createRenderPipeline, createComputePipeline}, start with a valid descriptor (control case),\nthen for each stage {{vertex, fragment}, compute}, make exactly one of the following errors:\n- one stage's module is an invalid object\n- one stage's entryPoint doesn't exist\n  - {different name, empty string, name that's almost the same but differs in some subtle unicode way}"
+      "debugMarker"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "beginComputePass"
+    ]
   },
   {
     "file": [
@@ -665,8 +1101,7 @@ export const listing = [
       "validation",
       "encoding",
       "beginRenderPass"
-    ],
-    "description": "TODO: check for duplication (render_pass/, etc.), plan, and implement.\nNote possibly a lot of this should be operation tests instead.\nNotes:\n> - color attachments {zero, one, multiple}\n>     - many different formats (some are non-renderable)\n>     - is a view on a texture with multiple mip levels or array layers\n>     - two attachments use the same view, or views of {intersecting, disjoint} ranges\n>     - {without, with} resolve target\n>         - resolve format compatibility with multisampled format\n>     - {all possible load ops, load color {in range, negative, too large}}\n>     - all possible store ops\n> - depth/stencil attachment\n>     - {unset, all possible formats}\n>     - {all possible {depth, stencil} load ops, load values {in range, negative, too large}}\n>     - all possible {depth, stencil} store ops\n>     - depthReadOnly {t,f}, stencilReadOnly {t,f}"
+    ]
   },
   {
     "file": [
@@ -674,9 +1109,8 @@ export const listing = [
       "validation",
       "encoding",
       "cmds",
-      "buffer_texture_copies"
-    ],
-    "description": "copyTextureToBuffer and copyBufferToTexture validation tests not covered by\ncopy_between_linear_data_and_texture or destroyed,*.\n\nTODO: plan"
+      "clearBuffer"
+    ]
   },
   {
     "file": [
@@ -685,8 +1119,7 @@ export const listing = [
       "encoding",
       "cmds",
       "compute_pass"
-    ],
-    "description": "API validation test for compute pass\n\nDoes **not** test usage scopes (resource_usages/) or programmable pass stuff (programmable_pass)."
+    ]
   },
   {
     "file": [
@@ -695,8 +1128,7 @@ export const listing = [
       "encoding",
       "cmds",
       "copyBufferToBuffer"
-    ],
-    "description": "copyBufferToBuffer tests.\n\nTest Plan:\n* Buffer is valid/invalid\n  - the source buffer is invalid\n  - the destination buffer is invalid\n* Buffer usages\n  - the source buffer is created without GPUBufferUsage::COPY_SRC\n  - the destination buffer is created without GPUBufferUsage::COPY_DEST\n* CopySize\n  - copySize is not a multiple of 4\n  - copySize is 0\n* copy offsets\n  - sourceOffset is not a multiple of 4\n  - destinationOffset is not a multiple of 4\n* Arthimetic overflow\n  - (sourceOffset + copySize) is overflow\n  - (destinationOffset + copySize) is overflow\n* Out of bounds\n  - (sourceOffset + copySize) > size of source buffer\n  - (destinationOffset + copySize) > size of destination buffer\n* Source buffer and destination buffer are the same buffer"
+    ]
   },
   {
     "file": [
@@ -705,8 +1137,7 @@ export const listing = [
       "encoding",
       "cmds",
       "copyTextureToTexture"
-    ],
-    "description": "copyTextureToTexture tests.\n\nTest Plan: (TODO(jiawei.shao@intel.com): add tests on 1D/3D textures)\n* the source and destination texture\n  - the {source, destination} texture is {invalid, valid}.\n  - mipLevel {>, =, <} the mipmap level count of the {source, destination} texture.\n  - the source texture is created {with, without} GPUTextureUsage::CopySrc.\n  - the destination texture is created {with, without} GPUTextureUsage::CopyDst.\n* sample count\n  - the sample count of the source texture {is, isn't} equal to the one of the destination texture\n  - when the sample count is greater than 1:\n    - it {is, isn't} a copy of the whole subresource of the source texture.\n    - it {is, isn't} a copy of the whole subresource of the destination texture.\n* texture format\n  - the format of the source texture {is, isn't} equal to the one of the destination texture.\n    - including: depth24plus-stencil8 to/from {depth24plus, stencil8}.\n  - for each depth and/or stencil format: a copy between two textures with same format:\n    - it {is, isn't} a copy of the whole subresource of the {source, destination} texture.\n* copy ranges\n  - if the texture dimension is 2D:\n    - (srcOrigin.x + copyExtent.width) {>, =, <} the width of the subresource size of source\n      textureCopyView.\n    - (srcOrigin.y + copyExtent.height) {>, =, <} the height of the subresource size of source\n      textureCopyView.\n    - (srcOrigin.z + copyExtent.depth) {>, =, <} the depth of the subresource size of source\n      textureCopyView.\n    - (dstOrigin.x + copyExtent.width) {>, =, <} the width of the subresource size of destination\n      textureCopyView.\n    - (dstOrigin.y + copyExtent.height) {>, =, <} the height of the subresource size of destination\n      textureCopyView.\n    - (dstOrigin.z + copyExtent.depth) {>, =, <} the depth of the subresource size of destination\n      textureCopyView.\n* when the source and destination texture are the same one:\n  - the set of source texture subresources {has, doesn't have} overlaps with the one of destination\n    texture subresources."
+    ]
   },
   {
     "file": [
@@ -715,8 +1146,7 @@ export const listing = [
       "encoding",
       "cmds",
       "debug"
-    ],
-    "description": "API validation test for debug groups and markers\n\nTest Coverage:\n  - For each encoder type (GPUCommandEncoder, GPUComputeEncoder, GPURenderPassEncoder,\n  GPURenderBundleEncoder):\n    - Test that all pushDebugGroup must have a corresponding popDebugGroup\n      - Push and pop counts of 0, 1, and 2 will be used.\n      - An error must be generated for non matching counts.\n    - Test calling pushDebugGroup with empty and non-empty strings.\n    - Test inserting a debug marker with empty and non-empty strings."
+    ]
   },
   {
     "file": [
@@ -725,8 +1155,17 @@ export const listing = [
       "encoding",
       "cmds",
       "index_access"
-    ],
-    "description": "indexed draws validation tests.\n\nTODO: review and make sure these notes are covered:\n> - indexed draws:\n>     - index access out of bounds (make sure this doesn't overlap with robust access)\n>         - bound index buffer **range** is {exact size, just under exact size} needed for draws with:\n>             - indexCount largeish\n>             - firstIndex {=, >} 0\n>     - x= {drawIndexed, drawIndexedIndirect}\n\nTODO: Since there are no errors here, these should be \"robustness\" operation tests (with multiple\nvalid results)."
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "render",
+      "draw"
+    ]
   },
   {
     "file": [
@@ -736,8 +1175,7 @@ export const listing = [
       "cmds",
       "render",
       "dynamic_state"
-    ],
-    "description": "API validation tests for dynamic state commands (setViewport/ScissorRect/BlendColor...).\n\nTODO: ensure existing tests cover these notes. Note many of these may be operation tests instead.\n> - setViewport\n>     - {x, y} = {0, invalid values if any}\n>     - {width, height, minDepth, maxDepth} = {\n>         - least possible value that's valid\n>         - greatest possible negative value that's invalid\n>         - greatest possible positive value that's valid\n>         - least possible positive value that's invalid if any\n>         - }\n>     - minDepth {<, =, >} maxDepth\n> - setScissorRect\n>     - {width, height} = 0\n>     - {x+width, y+height} = attachment size + 1\n> - setBlendColor\n>     - color {slightly, very} out of range\n>     - used with a simple pipeline that {does, doesn't} use it\n> - setStencilReference\n>     - {0, max}\n>     - used with a simple pipeline that {does, doesn't} use it"
+    ]
   },
   {
     "file": [
@@ -746,9 +1184,48 @@ export const listing = [
       "encoding",
       "cmds",
       "render",
-      "other"
-    ],
-    "description": "Does **not** test usage scopes (resource_usages/), programmable pass stuff (programmable,*),\nor state tracking (state_tracking).\n\nTODO: plan and implement. Notes:\n> All x= {render pass, render bundle}\n>\n> - setPipeline\n>     - {valid, invalid} GPURenderPipeline\n> - setIndexBuffer\n>     - buffer is {valid, invalid, doesn't have usage)\n>     - (offset, size) is\n>         - (0, 0)\n>         - (0, 1)\n>         - (0, 4)\n>         - (0, 5)\n>         - (0, b.size)\n>         - (min alignment, b.size - 4)\n>         - (4, b.size - 4)\n>         - (b.size - 4, 4)\n>         - (b.size, min size)\n>         - (0, min size), and if that's valid:\n>             - (b.size - min size, min size)\n> - setVertexBuffer\n>     - slot is {0, max, max+1}\n>     - buffer is {valid, invalid,  doesn't have usage)\n>     - (offset, size) is like above"
+      "indirect_draw"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "render",
+      "indirect_multi_draw"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "render",
+      "setIndexBuffer"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "render",
+      "setPipeline"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "render",
+      "setVertexBuffer"
+    ]
   },
   {
     "file": [
@@ -758,8 +1235,7 @@ export const listing = [
       "cmds",
       "render",
       "state_tracking"
-    ],
-    "description": "Validation tests for setVertexBuffer/setIndexBuffer state (not validation). See also operation tests."
+    ]
   },
   {
     "file": [
@@ -768,8 +1244,7 @@ export const listing = [
       "encoding",
       "cmds",
       "render_pass"
-    ],
-    "description": "Validation tests for render pass encoding.\nDoes **not** test usage scopes (resource_usages/), GPUProgrammablePassEncoder (programmable_pass),\ndynamic state (dynamic_render_state.spec.ts), or GPURenderEncoderBase (render.spec.ts).\n\nTODO:\n- executeBundles:\n    - with {zero, one, multiple} bundles where {zero, one} of them are invalid objects"
+    ]
   },
   {
     "file": [
@@ -778,8 +1253,23 @@ export const listing = [
       "encoding",
       "cmds",
       "setBindGroup"
-    ],
-    "description": "setBindGroup validation tests.\n\nTODO: merge these notes and implement.\n> (Note: If there are errors with using certain binding types in certain passes, test those in the file for that pass type, not here.)\n>\n> All x= {compute pass, render pass, render bundle}\n>\n> - setBindGroup\n>     - x= {compute pass, render pass}\n>     - index {0, max, max+1}\n>     - GPUBindGroup object {valid, invalid, valid but refers to destroyed {buffer, texture}}\n>     - bind group {with, without} dynamic offsets with {too few, too many} dynamicOffsets entries\n>         - x= {sequence, Uint32Array} overload\n>     - iff minBufferBindingSize is specified, buffer size is correctly validated against it (make sure static offset + dynamic offset are both accounted for)\n> - state tracking (probably separate file)\n>     - x= {compute pass, render pass}\n>     - {null, compatible, incompatible} current pipeline (should have no effect without draw/dispatch)\n>     - setBindGroup in different orders (e.g. 0,1,2 vs 2,0,1)"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "createRenderBundleEncoder"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "encoding",
+      "encoder_open_state"
+    ]
   },
   {
     "file": [
@@ -787,8 +1277,7 @@ export const listing = [
       "validation",
       "encoding",
       "encoder_state"
-    ],
-    "description": "TODO:\n- createCommandEncoder\n- non-pass command, or beginPass, during {render, compute} pass\n- {before (control case), after} finish()\n    - x= {finish(), ... all non-pass commands}\n- {before (control case), after} endPass()\n    - x= {render, compute} pass\n    - x= {finish(), ... all relevant pass commands}\n    - x= {\n        - before endPass (control case)\n        - after endPass (no pass open)\n        - after endPass+beginPass (a new pass of the same type is open)\n        - }\n    - should make whole encoder invalid\n- ?"
+    ]
   },
   {
     "file": [
@@ -797,8 +1286,7 @@ export const listing = [
       "encoding",
       "programmable",
       "pipeline_bind_group_compat"
-    ],
-    "description": "TODO:\n- test compatibility between bind groups and pipelines\n    - bind groups required by the pipeline layout are required.\n    - bind groups unused by the pipeline layout can be set or not.\n        (Even if e.g. bind groups 0 and 2 are used, but 1 is unused.)\n    - bindGroups[i].layout is \"group-equivalent\" (value-equal) to pipelineLayout.bgls[i].\n    - in the test fn, test once without the dispatch/draw (should always be valid) and once with\n      the dispatch/draw, to make sure the validation happens in dispatch/draw.\n    - x= {dispatch, all draws} (dispatch/draw should be size 0 to make sure validation still happens if no-op)\n    - x= all relevant stages\n\nTODO: subsume existing test, rewrite fixture as needed."
+    ]
   },
   {
     "file": [
@@ -807,8 +1295,7 @@ export const listing = [
       "encoding",
       "queries",
       "begin_end"
-    ],
-    "description": "Validation for encoding begin/endable queries.\n\nTODO:\n- balance: {\n    - begin 0, end 1\n    - begin 1, end 0\n    - begin 1, end 1\n    - begin 2, end 2\n    - }\n    - x= {\n        - render pass + occlusion\n        - render pass + pipeline statistics\n        - compute pass + pipeline statistics\n        - }\n- nesting: test whether it's allowed to nest various types of queries\n  (including writeTimestamp inside begin/endable queries)."
+    ]
   },
   {
     "file": [
@@ -817,28 +1304,7 @@ export const listing = [
       "encoding",
       "queries",
       "general"
-    ],
-    "description": "TODO:\n\n- For each way to start a query (all possible types in all possible encoders):\n    - queryIndex {in, out of} range for GPUQuerySet\n    - GPUQuerySet {valid, invalid}\n        - or {undefined}, for occlusionQuerySet\n    - ?"
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "encoding",
-      "queries",
-      "occlusion"
-    ],
-    "description": "Validation for encoding occlusion queries.\nExcludes query begin/end balance and nesting (begin_end.spec.ts)\nand querySet/queryIndex (general.spec.ts).\n\nTODO:\n- Test an occlusion query with no draw calls. (If that's valid, move the test to api/operation/.)\n- ?"
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "encoding",
-      "queries",
-      "pipeline_statistics"
-    ],
-    "description": "Validation for encoding pipeline statistics queries.\nExcludes query begin/end balance and nesting (begin_end.spec.ts)\nand querySet/queryIndex (general.spec.ts).\n\nTODO:\n- Test with an invalid querySet.\n- Test an pipeline statistics query with no draw/dispatch calls.\n  (If that's valid, move the test to api/operation/.)\n- ?"
+    ]
   },
   {
     "file": [
@@ -847,18 +1313,7 @@ export const listing = [
       "encoding",
       "queries",
       "resolveQuerySet"
-    ],
-    "description": "TODO:\n- invalid GPUQuerySet\n- firstQuery and/or queryCount out of range\n- invalid destination buffer\n- destinationOffset out of range\n- ?"
-  },
-  {
-    "file": [
-      "api",
-      "validation",
-      "encoding",
-      "queries",
-      "timestamp"
-    ],
-    "description": "Validation for encoding timestamp queries.\nExcludes query nesting (begin_end.spec.ts) and querySet/queryIndex (general.spec.ts).\n\nTODO: Is there anything to test here? If not, delete this file."
+    ]
   },
   {
     "file": [
@@ -866,41 +1321,82 @@ export const listing = [
       "validation",
       "encoding",
       "render_bundle"
-    ],
-    "description": "TODO:\n- test creating a render bundle, and if it's valid, test that executing it is not an error\n    - color formats {all possible formats} {zero, one, multiple}\n    - depth/stencil format {unset, all possible formats}\n- ?"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "error_scope"
-    ],
-    "description": "Error scope validation tests.\n\nNote these must create their own device, not use GPUTest (that one already has error scopes on it).\n\nTODO: shorten test names; detail should move to the description.)\n\nTODO: consider slightly revising these tests to make sure they're complete. {\n    - push 0, pop 1\n    - push validation, push oom, pop, pop, pop\n    - push oom, push validation, pop, pop, pop\n    - push validation, pop, pop\n    - push oom, pop, pop\n    - push various x100000 (or some other large number), pop x100000, pop\n    - }"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
-      "fences"
-    ],
-    "description": "fences validation tests.\n\nTODO: per-test descriptions, make names more succinct\nTODO: fences are removed; replace still-relevant tests with equivalents for (multiple?) queues\nTODO: Add some more tests/cases (may replace some existing tests), e.g.:\n  For fence values 0 < x < y < z:\n  - initialValue=0, signal(0)\n  - initialValue=x, signal(x)\n  - initialValue=x, signal(y)\n  - initialValue=y, signal(x)\n  - initialValue=x, signal(y), signal(y)\n  - initialValue=x, signal(y), signal(z), wait(z)\n  - initialValue=x, signal(z), signal(y)\n  - initialValue=x, wait(x)\n  - initialValue=y, wait(x)\n  - initialValue=x, wait(y)\n  - initialValue=x, signal(y), wait(x)\n  - initialValue=x, signal(y), wait(y)\n  - etc."
+      "getBindGroupLayout"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
-      "initialization",
-      "requestDevice"
+      "gpu_external_texture_expiration"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "image_copy"
     ],
-    "description": "Test validation conditions for requestDevice."
+    "readme": "writeTexture + copyBufferToTexture + copyTextureToBuffer validation tests.\n\nTest coverage:\n* resource usages:\n  - texture_usage_must_be_valid: for GPUTextureUsage::COPY_SRC, GPUTextureUsage::COPY_DST flags.\n  - buffer_usage_must_be_valid: for GPUBufferUsage::COPY_SRC, GPUBufferUsage::COPY_DST flags.\n\n* textureCopyView:\n  - texture_must_be_valid: for valid, destroyed, error textures.\n  - sample_count_must_be_1: for sample count 1 and 4.\n  - mip_level_must_be_in_range: for various combinations of mipLevel and mipLevelCount.\n  - format: for all formats with full and non-full copies on width, height, and depth.\n  - texel_block_alignment_on_origin: for all formats and coordinates.\n\n* bufferCopyView:\n  - buffer_must_be_valid: for valid, destroyed, error buffers.\n  - bytes_per_row_alignment: for bytesPerRow to be 256-byte aligned or not, and bytesPerRow is required or not.\n\n* linear texture data:\n  - bound_on_rows_per_image: for various combinations of copyDepth (1, >1), copyHeight, rowsPerImage.\n  - offset_plus_required_bytes_in_copy_overflow\n  - required_bytes_in_copy: testing minimal data size and data size too small for various combinations of bytesPerRow, rowsPerImage, copyExtent and offset. for the copy method, bytesPerRow is computed as bytesInACompleteRow aligned to be a multiple of 256 + bytesPerRowPadding * 256.\n  - texel_block_alignment_on_rows_per_image: for all formats.\n  - offset_alignment: for all formats.\n  - bound_on_offset: for various combinations of offset and dataSize.\n\n* texture copy range:\n  - 1d_texture: copyExtent.height isn't 1, copyExtent.depthOrArrayLayers isn't 1.\n  - texel_block_alignment_on_size: for all formats and coordinates.\n  - texture_range_conditons: for all coordinate and various combinations of origin, copyExtent, textureSize and mipLevel.\n\nTODO: more test coverage for 1D and 3D textures."
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "image_copy",
+      "buffer_related"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "image_copy",
+      "buffer_texture_copies"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "image_copy",
+      "layout_related"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "image_copy",
+      "texture_related"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "layout_shader_compat"
-    ],
-    "description": "TODO:\n- interface matching between pipeline layout and shader\n    - x= {compute, vertex, fragment, vertex+fragment}, visibilities\n    - x= bind group index values, binding index values, multiple bindings\n    - x= types of bindings\n    - x= {equal, superset, subset}"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "non_filterable_texture"
+    ]
   },
   {
     "file": [
@@ -908,8 +1404,7 @@ export const listing = [
       "validation",
       "query_set",
       "create"
-    ],
-    "description": "Tests for validation in createQuerySet."
+    ]
   },
   {
     "file": [
@@ -917,8 +1412,7 @@ export const listing = [
       "validation",
       "query_set",
       "destroy"
-    ],
-    "description": "Destroying a query set more than once is allowed."
+    ]
   },
   {
     "file": [
@@ -926,7 +1420,7 @@ export const listing = [
       "validation",
       "queue"
     ],
-    "readme": "Tests for validation that occurs inside queued operations\n(submit, writeBuffer, writeTexture, copyImageBitmapToTexture).\n\nBufferMapStatesToTest = {\n  mapped -> unmapped,\n  mapped at creation -> unmapped,\n  mapping pending -> unmapped,\n  pending -> mapped (await map),\n  unmapped -> pending (noawait map),\n  created mapped-at-creation,\n}\n\nNote writeTexture is tested in copyBetweenLinearDataAndTexture."
+    "readme": "Tests for validation that occurs inside queued operations\n(submit, writeBuffer, writeTexture, copyExternalImageToTexture).\n\nBufferMapStatesToTest = {\n  mapped -> unmapped,\n  mapped at creation -> unmapped,\n  mapping pending -> unmapped,\n  pending -> mapped (await map),\n  unmapped -> pending (noawait map),\n  created mapped-at-creation,\n}\n\nNote writeTexture is tested in image_copy."
   },
   {
     "file": [
@@ -934,17 +1428,16 @@ export const listing = [
       "validation",
       "queue",
       "buffer_mapped"
-    ],
-    "description": "Tests for map-state of mappable buffers used in submitted command buffers.\n\n- x= just before queue op, buffer in {BufferMapStatesToTest}\n- x= in every possible place for mappable buffer:\n  {submit, writeBuffer, copyB2B {src,dst}, copyB2T, copyT2B, ..?}\n\nTODO: generalize existing test"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "queue",
-      "copyImageBitmapToTexture"
-    ],
-    "description": "copyImageBitmapToTexture Validation Tests in Queue.\nTODO: Should this be the same file as, or next to, web_platform/copyImageBitmapToTexture.spec.ts?\n\nTODO: Split this test plan per-test.\n\nTest Plan:\n- For source.imageBitmap:\n  - imageBitmap generated from ImageData:\n    - Check that an error is generated when imageBitmap is closed.\n\n- For destination.texture:\n  - For 2d destination textures:\n    - Check that an error is generated when texture is in destroyed state.\n    - Check that an error is generated when texture is an error texture.\n    - Check that an error is generated when texture is created without usage COPY_DST.\n    - Check that an error is generated when sample count is not 1.\n    - Check that an error is generated when mipLevel is too large.\n    - Check that an error is generated when texture format is not valid.\n\n- For copySize:\n  - No-op copy shouldn't throw any exception or return any validation error.\n  - Check that an error is generated when destination.texture.origin + copySize is too large.\n\nTODO: copying into slices of 2d array textures. 1d and 3d as well if they're not invalid."
+      "copyToTexture",
+      "CopyExternalImageToTexture"
+    ]
   },
   {
     "file": [
@@ -953,8 +1446,7 @@ export const listing = [
       "queue",
       "destroyed",
       "buffer"
-    ],
-    "description": "Tests using a destroyed buffer on a queue.\n\n- used in {writeBuffer,\n  setBindGroup, copyB2B {src,dst}, copyB2T, copyT2B,\n  setIndexBuffer, {draw,dispatch}Indirect, ..?}\n- x= if applicable, {in pass, in bundle}\n- x= {destroyed, not destroyed (control case)}\n\nTODO: implement. (Search for other places some of these cases may have already been tested.)\nConsider whether these tests should be distributed throughout the suite, instead of centralized."
+    ]
   },
   {
     "file": [
@@ -963,8 +1455,7 @@ export const listing = [
       "queue",
       "destroyed",
       "query_set"
-    ],
-    "description": "Tests using a destroyed query set on a queue.\n\n- used in {resolveQuerySet, timestamp {compute, render, non-pass},\n    pipeline statistics {compute, render}, occlusion}\n- x= {destroyed, not destroyed (control case)}\n\nTODO: implement. (Search for other places some of these cases may have already been tested.)\nConsider whether these tests should be distributed throughout the suite, instead of centralized."
+    ]
   },
   {
     "file": [
@@ -973,8 +1464,15 @@ export const listing = [
       "queue",
       "destroyed",
       "texture"
-    ],
-    "description": "Tests using a destroyed texture on a queue.\n\n- used in {writeTexture,\n  setBindGroup, copyT2T {src,dst}, copyB2T, copyT2B, copyImageBitmapToTexture,\n  color attachment {0,>0}, {D,S,DS} attachment, ..?}\n- x= if applicable, {in pass, in bundle}\n- x= {destroyed, not destroyed (control case)}\n\nTODO: implement. (Search for other places some of these cases may have already been tested.)\nConsider whether these tests should be distributed throughout the suite, instead of centralized."
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue",
+      "submit"
+    ]
   },
   {
     "file": [
@@ -982,8 +1480,15 @@ export const listing = [
       "validation",
       "queue",
       "writeBuffer"
-    ],
-    "description": "Tests writeBuffer validation.\n\n- buffer missing usage flag\n- bufferOffset {ok, unaligned, too large for buffer}\n- dataOffset {ok, too large for data}\n- buffer size {ok, too small for copy}\n- data size {ok, too small for copy}\n- size {aligned, unaligned}\n- size unspecified; default {ok, too large for buffer}\n\nNote: destroyed buffer is tested in destroyed/.\n\nTODO: implement usage flag validation.\nTODO: validate large write sizes that may overflow."
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "queue",
+      "writeTexture"
+    ]
   },
   {
     "file": [
@@ -998,26 +1503,112 @@ export const listing = [
       "api",
       "validation",
       "render_pass",
-      "resolve"
-    ],
-    "description": "Validation tests for render pass resolve."
+      "attachment_compatibility"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
       "render_pass",
-      "storeOp"
-    ],
-    "description": "API Validation Tests for RenderPass StoreOp.\n\nTest Coverage:\n  - Tests that when depthReadOnly is true, depthStoreOp must be 'store'.\n    - When depthReadOnly is true and depthStoreOp is 'clear', an error should be generated.\n\n  - Tests that when stencilReadOnly is true, stencilStoreOp must be 'store'.\n    - When stencilReadOnly is true and stencilStoreOp is 'clear', an error should be generated.\n\n  - Tests that the depthReadOnly value matches the stencilReadOnly value.\n    - When depthReadOnly does not match stencilReadOnly, an error should be generated.\n\n  - Tests that depthReadOnly and stencilReadOnly default to false.\n\nTODO: test interactions with depthLoadValue too"
+      "render_pass_descriptor"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
-      "render_pass_descriptor"
-    ],
-    "description": "render pass descriptor validation tests.\n\nTODO: per-test descriptions, make test names more succinct\nTODO: review for completeness"
+      "render_pass",
+      "resolve"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "depth_stencil_state"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "float32_blendable"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "fragment_state"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "inter_stage"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "misc"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "multisample_state"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "overrides"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "primitive_state"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "resource_compatibility"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "shader_module"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "render_pipeline",
+      "vertex_state"
+    ]
   },
   {
     "file": [
@@ -1033,10 +1624,27 @@ export const listing = [
       "api",
       "validation",
       "resource_usages",
+      "buffer",
+      "in_pass_encoder"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "resource_usages",
+      "buffer",
+      "in_pass_misc"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "resource_usages",
       "texture",
       "in_pass_encoder"
-    ],
-    "description": "Texture Usages Validation Tests in Render Pass and Compute Pass.\n\nTODO: description per test\n\nTest Coverage:\n  - For each combination of two texture usages:\n    - For various subresource ranges (different mip levels or array layers) that overlap a given\n      subresources or not for color formats:\n      - For various places that resources are used, for example, used in bundle or used in render\n        pass directly.\n        - Check that an error is generated when read-write or write-write usages are binding to the\n          same texture subresource. Otherwise, no error should be generated. One exception is race\n          condition upon two writeonly-storage-texture usages, which is valid.\n\n  - For each combination of two texture usages:\n    - For various aspects (all, depth-only, stencil-only) that overlap a given subresources or not\n      for depth/stencil formats:\n      - Check that an error is generated when read-write or write-write usages are binding to the\n        same aspect. Otherwise, no error should be generated.\n\n  - Test combinations of two shader stages:\n    - Texture usages in bindings with invisible shader stages should be validated. Invisible shader\n      stages include shader stage with visibility none, compute shader stage in render pass, and\n      vertex/fragment shader stage in compute pass.\n\n  - Tests replaced bindings:\n    - Texture usages via bindings replaced by another setBindGroup() upon the same bindGroup index\n      in render pass should be validated. However, replaced bindings should not be validated in\n      compute pass.\n\n  - Test texture usages in bundle:\n    - Texture usages in bundle should be validated if that bundle is executed in the current scope.\n\n  - Test texture usages with unused bindings:\n    - Texture usages should be validated even its bindings is not used in pipeline.\n\n  - Test texture usages validation scope:\n    - Texture usages should be validated per each render pass. And they should be validated per each\n      dispatch call in compute."
+    ]
   },
   {
     "file": [
@@ -1045,8 +1653,7 @@ export const listing = [
       "resource_usages",
       "texture",
       "in_render_common"
-    ],
-    "description": "TODO:\n- 2 views:\n    - x= {upon the same subresource, or different subresources {mip level, array layer, aspect} of the same texture}\n    - x= possible binding types on each view: read = {sampled texture, readonly storage texture}, write = {storage texture, render target}\n    - x= different shader stages: {0, ..., 7}\n        - maybe first view vis = {1, 2, 4}, second view vis = {0, ..., 7}\n    - x= bindings are in {\n        - same draw call\n        - same pass, different draw call\n        - different pass\n        - }\n(It's probably not necessary to test EVERY possible combination of options in this whole\nblock, so we could break it down into a few smaller ones (one for different types of\nsubresources, one for same draw/same pass/different pass, one for visibilities).)"
+    ]
   },
   {
     "file": [
@@ -1055,8 +1662,23 @@ export const listing = [
       "resource_usages",
       "texture",
       "in_render_misc"
-    ],
-    "description": "TODO:\n- 2 views: upon the same subresource, or different subresources of the same texture\n    - texture usages in copies and in render pass\n    - consecutively set bind groups on the same index (@Richard-Yunchao: Maybe I can combine this one with the above tests. The two bind groups can either have the same index or different indices.)\n    - unused bind groups"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "shader_module",
+      "entry_point"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "shader_module",
+      "overrides"
+    ]
   },
   {
     "file": [
@@ -1072,9 +1694,17 @@ export const listing = [
       "api",
       "validation",
       "state",
-      "device_mismatched"
-    ],
-    "readme": "Tests of behavior on one device using objects from another device.\n\n- x= every place in the API where an object is passed (as this, an arg, or a dictionary member).\n\nTODO: implement"
+      "device_lost",
+      "destroy"
+    ]
+  },
+  {
+    "file": [
+      "api",
+      "validation",
+      "texture",
+      "bgra8unorm_storage"
+    ]
   },
   {
     "file": [
@@ -1082,44 +1712,191 @@ export const listing = [
       "validation",
       "texture",
       "destroy"
-    ],
-    "description": "Destroying a texture more than once is allowed."
+    ]
   },
   {
     "file": [
       "api",
       "validation",
-      "vertex_access"
-    ],
-    "description": "TODO: make sure this isn't already covered somewhere else, review, organize, and implement.\n> - In encoder.finish():\n>     - setVertexBuffer and setIndexBuffer commands (even if no draw):\n>         - If not valid at draw time, test overlapping {vertex/vertex,vertex/index}\n>           buffers are valid without draw.\n>         - Before, after setPipeline (should have no effect)\n>         - Implicit offset/size are computed correctly. E.g.:\n>             { offset:         0, boundSize:         0, bufferSize: 24 },\n>             { offset:         0, boundSize: undefined, bufferSize: 24 },\n>             { offset: undefined, boundSize:         0, bufferSize: 24 },\n>             { offset: undefined, boundSize: undefined, bufferSize: 24 },\n>             { offset:         8, boundSize:        16, bufferSize: 24 },\n>             { offset:         8, boundSize: undefined, bufferSize: 24 },\n>         - Computed {index, vertex} buffer size is zero.\n>             (Omit draw command if it's not necessary to trigger error, otherwise test both with and without draw command to make sure error happens at the right time.)\n>             { offset: 24, boundSize: undefined, bufferSize: 24, _ok: false },\n>         - Bound range out-of-bounds on the GPUBuffer. E.g.:\n>             - x= offset in {0,8}\n>             - x= boundSize in {8,16,17}\n>             - x= extraSpaceInBuffer in {-1,0}\n>     - All (non/indexed, in/direct) draw commands\n>         - Same GPUBuffer bound to multiple vertex buffer slots\n>             - Non-overlapping, overlapping ranges\n>         - A needed vertex buffer is not bound\n>             - Was bound in another render pass but not the current one\n>             - x= all vertex formats\n>         - setPl, setVB, setIB, draw, {setPl,setVB,setIB,nothing (control)}, then\n>           a larger draw that wouldn't have been valid before that\n>         - Draw call needs to read {=, >} any bound vertex buffer range\n>           (with GPUBuffer that is always large enough)\n>             - x= all vertex formats\n>             - x= weird offset values\n>             - x= weird arrayStride values\n>         - A bound vertex buffer range is significantly larger than necessary\n>     - All non-indexed (in/direct) draw commands, {\n>         - An unused {index (with uselessly small range), vertex} buffer\n>           is bound (immediately before draw call)\n>         - }\n>     - All indexed (in/direct) draw commands, {\n>         - No index buffer is bound\n>         - Same GPUBuffer bound to index buffer and a vertex buffer slot\n>             - Non-overlapping, overlapping ranges\n>         - Draw call needs to read {=, >} the bound index buffer range\n>           (with GPUBuffer that is always large enough)\n>             - range is too small and GPUBuffer is large enough\n>             - range and GPUBuffer are exact size\n>             - x= all index formats\n>         - Bound index buffer range is significantly larger than necessary\n>         - }\n>     - Alignment constraints on setVertexBuffer if any\n>     - Alignment constraints on setIndexBuffer if any\n> - In queue.submit():\n>     - Indexed draw call with index buffer containing:\n>         - Index value that goes out-of-bounds on a bound vertex buffer range\n>         - Index value that is extremely large (but not the primitive restart value)\n>     - Line strip or triangle strip with index buffer containing:\n>         - Primitive restart value\n>         - Primitive restart value minus one (and the bound vertex buffers are < that size)\n>     - Indirect draw call with arguments that:\n>         - Go out-of-bounds on the bound index buffer range\n>         - Go out-of-bounds on the bound vertex buffer range\n\nTODO: Had two plans with roughly the same name. Figure out where to categorize these notes:\n> All x= {render pass, render bundle}\n>\n> - non-indexed draws:\n>     - vertex access out of bounds (make sure this doesn't overlap with robust access)\n>         - bound vertex buffer **ranges** are {exact size, just under exact size} needed for draws with:\n>             - vertexCount largeish\n>             - firstVertex {=, >} 0\n>             - instanceCount largeish\n>             - firstInstance {=, >} 0\n>         - include VBs with both step modes\n>     - x= {draw, drawIndirect}\n> - indexed draws:\n>     - vertex access out of bounds (make sure this doesn't overlap with robust access)\n>         - bound vertex buffer **ranges** are {exact size, just under exact size} needed for draws with:\n>             - a vertex index in the buffer is largeish\n>             - baseVertex {=, >} 0\n>             - instanceCount largeish\n>             - firstInstance {=, >} 0\n>         - include VBs with both step modes\n>     - x= {drawIndirect, drawIndexedIndirect}"
+      "texture",
+      "float32_filterable"
+    ]
   },
   {
     "file": [
       "api",
       "validation",
+      "texture",
+      "rg11b10ufloat_renderable"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "createBindGroup"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "createBindGroupLayout"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "createBindGroupLayout_limits"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "createPipelineLayout"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "copyTextureToBuffer"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "encoding",
+      "cmds",
+      "copyTextureToTexture"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "encoding",
+      "programmable",
+      "pipeline_bind_group_compat"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "pipeline_creation"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "render_pipeline",
+      "depth_stencil_state"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "render_pipeline",
+      "fragment_state"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "render_pipeline",
+      "in_stage_limits"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "render_pipeline",
+      "unsupported_wgsl"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "render_pipeline",
       "vertex_state"
-    ],
-    "description": "vertexState validation tests.\n\nTODO: implement the combinations tests below.\n\nTest the number of vertex buffers allowed:\n - For buffers = 0, 1, limit, limit + 1\n  - Test using empty vertex buffers except the last one with 0 or 1 element\n   - Test should fail IFF buffers > limit\n(note this also tests that empty vertex buffers are allowed)\n\nTest the limit of attributes:\n - For attributePerBuffer = 0, 1, 4:\n  - For totalAttribs = 4, limit, limit + 1\n   - Generate buffers with attribsPerBuffer until we reach totalAttribs (or complete the last one to reach it)\n    - Test should fail IFF totalAttribs > limit\n\nTest the shaderLocation must be unique:\n - TBD based on answer to https://github.com/gpuweb/gpuweb/issues/1418\n\nTest each declaration in the shader must have an attribute with that shaderLocation:\n - For each shaderLocation TBD:\n  - For buffersIndex = 0 1, limit-1\n   - For attribute index = 0, 1, 4\n    - Create a vertexState with/without the attribute with that shader location at buffer[bufferIndex].attribs[attribIndex]\n     - Check error IFF vertexState doesn't have the shaderLocation\n\nTest each declaration must have a format compatible with the attribute:\n - For each vertex format\n  - For each type of shader declaration\n   - Check error IFF shader declaration not compatible with the attribute's format.\n\nOne-off test that many attributes can overlap.\n\nAll tests below are for a vertex buffer index 0, 1, limit-1.\n\nTest the max stride check:\n - For stride = 0, 4, 256, limit - 4, limit, limit +1\n  - Check error IFF stride > limit\n\nTest the stride alignment check:\n - For stride = 0, 2, 4, limit -4, limit -2, limit:\n  - Check error IFF stride not aligned to 4\n\nTest check that the end attribute must be contained in the stride:\n - For stride = 0 (special case), 4, 128, limit\n   - For each vertex format\n    - For offset stride, stride - componentsize(format), stride - sizeof(format), stride - sizeof(format) + componentsize(format), 0, 2^32 - componentsize(format), 2^32, 2**60\n      - Check error IFF offset + sizeof(format) > stride (or 2048 for 0)\n\nTest that an attribute must be aligned to the component size:\n - For each vertex format\n  - For stride = 2*sizeof(format), 128, limit\n    - For offset = componentsize(format), componentsize(format) / 2, stride - sizeof(format) - componentsize(format), stride - sizeof(format)\n     - Check error IFF offset not aligned to componentsize(format);"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "texture",
+      "createTexture"
+    ]
+  },
+  {
+    "file": [
+      "compat",
+      "api",
+      "validation",
+      "texture",
+      "cubeArray"
+    ]
   },
   {
     "file": [
       "examples"
-    ],
-    "description": "Examples of writing CTS tests with various features.\n\nStart here when looking for examples of basic framework usage."
+    ]
   },
   {
     "file": [
       "idl"
     ],
-    "readme": "Tests to check that the WebGPU IDL is correctly implemented, for examples that objects exposed\nexactly the correct members, and that methods throw when passed incomplete dictionaries.\n\nSee https://github.com/gpuweb/cts/issues/332"
+    "readme": "Tests to check that the WebGPU IDL is correctly implemented, for examples that objects exposed\nexactly the correct members, and that methods throw when passed incomplete dictionaries.\n\nSee https://github.com/gpuweb/cts/issues/332\n\nTODO: exposed.html.ts: Test all WebGPU interfaces instead of just some of them.\nTODO: Check prototype chains. (Add a helper in IDLTest for this.)"
   },
   {
     "file": [
       "idl",
       "constants",
       "flags"
-    ],
-    "description": "Test the values of flags interfaces (e.g. GPUTextureUsage)."
+    ]
+  },
+  {
+    "file": [
+      "idl",
+      "constructable"
+    ]
+  },
+  {
+    "file": [
+      "idl",
+      "javascript"
+    ]
+  },
+  {
+    "file": [
+      "print_environment"
+    ]
   },
   {
     "file": [
@@ -1138,9 +1915,2244 @@ export const listing = [
     "file": [
       "shader",
       "execution",
+      "expression",
+      "access",
+      "array",
+      "index"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "access",
+      "matrix",
+      "index"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "access",
+      "structure",
+      "index"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "access",
+      "vector",
+      "components"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "access",
+      "vector",
+      "index"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_addition"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_division"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_matrix_addition"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_matrix_matrix_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_matrix_scalar_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_matrix_subtraction"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_matrix_vector_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_remainder"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "af_subtraction"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "ai_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "ai_comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "bitwise"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "bitwise_shift"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "bool_logical"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_addition"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_division"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_matrix_addition"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_matrix_matrix_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_matrix_scalar_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_matrix_subtraction"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_matrix_vector_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_remainder"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f16_subtraction"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_addition"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_division"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_matrix_addition"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_matrix_matrix_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_matrix_scalar_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_matrix_subtraction"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_matrix_vector_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_multiplication"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_remainder"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "f32_subtraction"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "i32_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "i32_comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "u32_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "binary",
+      "u32_comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "abs"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "acos"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "acosh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "all"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "any"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "arrayLength"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "asin"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "asinh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atan"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atan2"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atanh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicAdd"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicAnd"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicCompareExchangeWeak"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicExchange"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicMax"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicMin"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicOr"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicStore"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicSub"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "atomics",
+      "atomicXor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "bitcast"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "ceil"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "clamp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "cos"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "cosh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "countLeadingZeros"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "countOneBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "countTrailingZeros"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "cross"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "degrees"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "determinant"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "distance"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dot"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dot4I8Packed"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dot4U8Packed"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dpdx"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dpdxCoarse"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dpdxFine"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dpdy"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dpdyCoarse"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "dpdyFine"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "exp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "exp2"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "extractBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "faceForward"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "firstLeadingBit"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "firstTrailingBit"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "floor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "fma"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "fract"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "frexp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "fwidth"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "fwidthCoarse"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "fwidthFine"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "insertBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "inversesqrt"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "ldexp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "length"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "log"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "log2"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "max"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "min"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "mix"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "modf"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "normalize"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack2x16float"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack2x16snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack2x16unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack4x8snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack4x8unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xI8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xI8Clamp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xU8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xU8Clamp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "pow"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "quadBroadcast"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "quadSwap"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "quantizeToF16"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "radians"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "reflect"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "refract"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "reverseBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "round"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "saturate"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "select"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "sign"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "sin"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "sinh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "smoothstep"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "sqrt"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "step"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "storageBarrier"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupAdd"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupAll"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupAny"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupBallot"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupBitwise"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupBroadcast"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupElect"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupMinMax"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupMul"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupShuffle"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "tan"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "tanh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureDimensions"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureGather"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureGatherCompare"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumLayers"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumLevels"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumSamples"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureSample"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleBaseClampToEdge"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleBias"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleCompare"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleCompareLevel"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleGrad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleLevel"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "textureStore"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "texture_utils"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "transpose"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "trunc"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16float"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4x8snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4x8unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4xI8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4xU8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "workgroupBarrier"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "builtin",
+      "workgroupUniformLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "call",
+      "user",
+      "ptr_params"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "constructor",
+      "non_zero"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "constructor",
+      "zero_value"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "precedence"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "address_of_and_indirection"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "af_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "af_assignment"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "ai_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "ai_assignment"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "ai_complement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "bool_conversion"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "bool_logical"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "f16_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "f16_conversion"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "f32_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "f32_conversion"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "i32_arithmetic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "i32_complement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "i32_conversion"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "u32_complement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "expression",
+      "unary",
+      "u32_conversion"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "float_parse"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "call"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "complex"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "eval_order"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "for"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "if"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "loop"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "phony"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "return"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "switch"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "flow_control",
+      "while"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "limits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_layout"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_model",
+      "adjacent"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_model",
+      "atomicity"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_model",
+      "barrier"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_model",
+      "coherence"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_model",
+      "texture_intra_invocation_coherence"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "memory_model",
+      "weak"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "override"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "padding"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "robust_access"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
       "robust_access_vertex"
-    ],
-    "description": "Test vertex attributes behave correctly (no crash / data leak) when accessed out of bounds\n\nTest coverage:\n\nThe following will be parameterized (all combinations tested):\n\n1) Draw call indexed? (false / true)\n  - Run the draw call using an index buffer\n\n2) Draw call indirect? (false / true)\n  - Run the draw call using an indirect buffer\n\n3) Draw call parameter (vertexCount, firstVertex, indexCount, firstIndex, baseVertex, instanceCount,\n  firstInstance)\n  - The parameter which will go out of bounds. Filtered depending on if the draw call is indexed.\n\n4) Attribute type (float, vec2, vec3, vec4)\n  - The input attribute type in the vertex shader\n\n5) Error scale (1, 4, 10^2, 10^4, 10^6)\n  - Offset to add to the correct draw call parameter\n\n6) Additional vertex buffers (0, +4)\n  - Tests that no OOB occurs if more vertex buffers are used\n\nThe tests will also have another vertex buffer bound for an instanced attribute, to make sure\ninstanceCount / firstInstance are tested.\n\nThe tests will include multiple attributes per vertex buffer.\n\nThe vertex buffers will be filled by repeating a few chosen values until the end of the buffer.\n\nThe test will run a render pipeline which verifies the following:\n1) All vertex attribute values occur in the buffer or are zero\n2) All gl_VertexIndex values are within the index buffer or 0\n\nTODO:\n\nA suppression may be needed for d3d12 on tests that have non-zero baseVertex, since d3d12 counts\nfrom 0 instead of from baseVertex (will fail check for gl_VertexIndex).\n\nVertex buffer contents could be randomized to prevent the case where a previous test creates\na similar buffer to ours and the OOB-read seems valid. This should be deterministic, which adds\nmore complexity that we may not need."
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "shader_io",
+      "compute_builtins"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "shader_io",
+      "fragment_builtins"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "shader_io",
+      "shared_structs"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "shader_io",
+      "user_io"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "shader_io",
+      "vertex_builtins"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "shader_io",
+      "workgroup_size"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "shadow"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "stage"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "statement",
+      "compound"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "statement",
+      "discard"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "statement",
+      "increment_decrement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "statement",
+      "phony"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "value_init"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "execution",
+      "zero_init"
+    ]
   },
   {
     "file": [
@@ -1160,77 +4172,2027 @@ export const listing = [
     "file": [
       "shader",
       "validation",
-      "variable_and_const"
-    ],
-    "description": "Positive and negative validation tests for variable and const."
+      "const_assert",
+      "const_assert"
+    ]
   },
   {
     "file": [
       "shader",
       "validation",
-      "wgsl",
-      "basic"
-    ],
-    "description": "Basic WGSL validation tests to test the ShaderValidationTest fixture."
+      "decl",
+      "compound_statement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
+      "const"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
+      "context_dependent_resolution"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
+      "let"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
+      "override"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "decl",
+      "var"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "access",
+      "array"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "access",
+      "matrix"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "access",
+      "structure"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "access",
+      "vector"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "add_sub_mul"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "and_or_xor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "bitwise_shift"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "div_rem"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "parse"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "binary",
+      "short_circuiting_and_or"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "abs"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "acos"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "acosh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "all"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "any"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "arrayLength"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "asin"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "asinh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "atan"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "atan2"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "atanh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "atomics"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "barriers"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "bitcast"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "ceil"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "clamp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "cos"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "cosh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "countLeadingZeros"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "countOneBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "countTrailingZeros"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "cross"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "degrees"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "derivatives"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "determinant"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "distance"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "dot"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "dot4I8Packed"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "dot4U8Packed"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "exp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "exp2"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "extractBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "faceForward"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "firstLeadingBit"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "firstTrailingBit"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "floor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "fma"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "fract"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "frexp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "insertBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "inverseSqrt"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "ldexp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "length"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "log"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "log2"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "max"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "min"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "mix"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "modf"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "normalize"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack2x16float"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack2x16snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack2x16unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack4x8snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack4x8unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xI8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xI8Clamp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xU8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pack4xU8Clamp"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "pow"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "quadBroadcast"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "quadSwap"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "quantizeToF16"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "radians"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "reflect"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "refract"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "reverseBits"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "round"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "saturate"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "select"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "sign"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "sin"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "sinh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "smoothstep"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "sqrt"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "step"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupAdd"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupAnyAll"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupBallot"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupBitwise"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupBroadcast"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupBroadcastFirst"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupElect"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupMinMax"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupMul"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "subgroupShuffle"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "tan"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "tanh"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureDimensions"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureGather"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureGatherCompare"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumLayers"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumLevels"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureNumSamples"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSample"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleBaseClampToEdge"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleBias"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleCompare"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleCompareLevel"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleGrad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureSampleLevel"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "textureStore"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "transpose"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "trunc"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16float"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack2x16unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4x8snorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4x8unorm"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4xI8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "unpack4xU8"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "value_constructor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "call",
+      "builtin",
+      "workgroupUniformLoad"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "early_evaluation"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "matrix",
+      "add_sub"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "matrix",
+      "and_or_xor"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "matrix",
+      "bitwise_shift"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "matrix",
+      "comparison"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "matrix",
+      "div_rem"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "matrix",
+      "mul"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "overload_resolution"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "precedence"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "unary",
+      "address_of_and_indirection"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "unary",
+      "arithmetic_negation"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "unary",
+      "bitwise_complement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "expression",
+      "unary",
+      "logical_negation"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "extension",
+      "clip_distances"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "extension",
+      "dual_source_blending"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "extension",
+      "pointer_composite_access"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "extension",
+      "readonly_and_readwrite_storage_textures"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "functions",
+      "alias_analysis"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "functions",
+      "restrictions"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "attribute"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "blankspace"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "comments"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "diagnostic"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "enable"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "identifiers"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "literal"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "must_use"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "requires"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "semicolon"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "shadow_builtins"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "parse",
+      "source"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "align"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "binding"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "builtins"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "entry_point"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "group"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "group_and_binding"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "id"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "interpolate"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "invariant"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "layout_constraints"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "locations"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "pipeline_stage"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "size"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "shader_io",
+      "workgroup_size"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "break"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "break_if"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "compound"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "const_assert"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "continue"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "continuing"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "discard"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "for"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "if"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "increment_decrement"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "loop"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "phony"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "return"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "statement_behavior"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "switch"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "statement",
+      "while"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "alias"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "array"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "atomics"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "enumerant"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "matrix"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "pointer"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "ref"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "struct"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "textures"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "types",
+      "vector"
+    ]
+  },
+  {
+    "file": [
+      "shader",
+      "validation",
+      "uniformity",
+      "uniformity"
+    ]
+  },
+  {
+    "file": [
+      "util",
+      "texture",
+      "color_space_conversions"
+    ]
   },
   {
     "file": [
       "util",
       "texture",
       "texel_data"
-    ],
-    "description": "Test helpers for texel data produce the expected data in the shader"
+    ]
+  },
+  {
+    "file": [
+      "util",
+      "texture",
+      "texture_ok"
+    ]
   },
   {
     "file": [
       "web_platform"
     ],
-    "readme": "Tests for Web platform-specific interactions like GPUSwapChain and canvas, WebXR,\nImageBitmaps, and video APIs."
+    "readme": "Tests for Web platform-specific interactions like GPUCanvasContext and canvas, WebXR,\nImageBitmaps, and video APIs.\n\nTODO(#922): Also hopefully tests for user-initiated readbacks from WebGPU canvases\n(printing, save image as, etc.)"
+  },
+  {
+    "file": [
+      "web_platform",
+      "canvas"
+    ],
+    "readme": "Tests for WebGPU <canvas> and OffscreenCanvas presentation."
   },
   {
     "file": [
       "web_platform",
       "canvas",
-      "configureSwapChain"
-    ],
-    "description": "Tests for GPUCanvasContext.configureSwapChain.\n\nTODO: Test all options of configureSwapChain."
+      "configure"
+    ]
   },
   {
     "file": [
       "web_platform",
       "canvas",
       "context_creation"
-    ],
-    "description": ""
+    ]
   },
   {
     "file": [
       "web_platform",
       "canvas",
       "getCurrentTexture"
-    ],
-    "description": "Tests for GPUSwapChain.getCurrentTexture."
+    ]
   },
   {
     "file": [
       "web_platform",
       "canvas",
-      "getSwapChainPreferredFormat"
-    ],
-    "description": "Tests for GPUCanvasContext.getSwapChainPreferredFormat."
+      "getPreferredCanvasFormat"
+    ]
   },
   {
     "file": [
       "web_platform",
-      "copyImageBitmapToTexture"
+      "canvas",
+      "readbackFromWebGPUCanvas"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture",
+      "ImageBitmap"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture",
+      "ImageData"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture"
     ],
-    "description": "copyImageBitmapToTexture from ImageBitmaps created from various sources.\n\nTODO: additional sources"
+    "readme": "Tests for copyToTexture from all possible sources (video, canvas, ImageBitmap, ...)"
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture",
+      "canvas"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture",
+      "image"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture",
+      "image_file"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "copyToTexture",
+      "video"
+    ]
+  },
+  {
+    "file": [
+      "web_platform",
+      "external_texture"
+    ],
+    "readme": "Tests for external textures."
+  },
+  {
+    "file": [
+      "web_platform",
+      "external_texture",
+      "video"
+    ]
   },
   {
     "file": [
       "web_platform",
       "reftests"
     ],
-    "readme": "Reference tests (reftests) for WebGPU canvas presentation.\n\nThese render some contents to a canvas using WebGPU, and WPT compares the rendering result with\nthe \"reference\" versions (in `ref/`) which render with 2D canvas.\n\nThis tests things like:\n- The canvas has the correct orientation.\n- The canvas renders with the correct transfer function.\n- The canvas blends and interpolates in the correct color encoding.\n\nTODO: Test all possible output texture formats (currently only testing bgra8unorm).\nTODO: Test all possible ways to write into those formats (currently only testing B2T copy)."
+    "readme": "Reference tests (reftests) for WebGPU canvas presentation.\n\nThese render some contents to a canvas using WebGPU, and WPT compares the rendering result with\nthe \"reference\" versions (in `ref/`) which render with 2D canvas.\n\nThis tests things like:\n- The canvas has the correct orientation.\n- The canvas renders with the correct transfer function.\n- The canvas blends and interpolates in the correct color encoding.\n\nTODO(#918): Test all possible color spaces (once we have more than 1)\nTODO(#921): Why is there sometimes a difference of 1 (e.g. 3f vs 40) in canvas_size_different_with_back_buffer_size?\nAnd why does chromium's image_diff show diffs on other pixels that don't seem to have diffs?\nTODO(#1093): Test rgba16float values which are out of gamut of the canvas but under SDR luminance.\nTODO(#1093): Test rgba16float values which are above SDR luminance.\nTODO(#1116): Test canvas scaling.\nTODO: Test transferControlToOffscreen, used from {the same,another} thread"
+  },
+  {
+    "file": [
+      "web_platform",
+      "worker",
+      "worker"
+    ]
   }
 ];

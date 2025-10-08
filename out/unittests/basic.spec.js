@@ -8,30 +8,28 @@ import { UnitTest } from './unit_test.js';
 
 export const g = makeTestGroup(UnitTest);
 
+g.test('test,sync').fn((_t) => {});
 
-g.test('test,sync').fn(t => {});
-
-
-g.test('test,async').fn(async t => {});
+g.test('test,async').fn(async (_t) => {});
 
 g.test('test_with_params,sync').
-params([{}]).
-fn(t => {
+paramsSimple([{}]).
+fn((t) => {
   t.debug(JSON.stringify(t.params));
 });
 
 g.test('test_with_params,async').
-params([{}]).
-fn(async t => {
+paramsSimple([{}]).
+fn((t) => {
   t.debug(JSON.stringify(t.params));
 });
 
 g.test('test_with_params,private_params').
-params([
+paramsSimple([
 { a: 1, b: 2, _result: 3 }, //
-{ a: 4, b: -3, _result: 1 }]).
-
-fn(t => {
+{ a: 4, b: -3, _result: 1 }]
+).
+fn((t) => {
   const { a, b, _result } = t.params;
   t.expect(a + b === _result);
 });

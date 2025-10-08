@@ -1,13 +1,12 @@
 /**
 * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/import { assert } from '../../../../../common/framework/util/util.js';import {
-kEncodableTextureFormatInfo } from
-'../../../../capability_info.js';
+**/import { assert, unreachable } from '../../../../../common/util/util.js';import { virtualMipSize } from '../../../../util/texture/base.js';
 import {
-kTexelRepresentationInfo,
-getSingleDataType,
-getComponentReadbackTraits } from
+  kTexelRepresentationInfo,
+  getSingleDataType,
+  getComponentReadbackTraits } from
 '../../../../util/texture/texel_data.js';
+
 
 
 export const checkContentsBySampling = (
@@ -17,18 +16,19 @@ texture,
 state,
 subresourceRange) =>
 {
-  assert(params.dimension === '2d');
-  assert(params.format in kEncodableTextureFormatInfo);
   const format = params.format;
   const rep = kTexelRepresentationInfo[format];
 
-  for (const { level, slices } of subresourceRange.mipLevels()) {
-    const width = t.textureWidth >> level;
-    const height = t.textureHeight >> level;
+  for (const { level, layers } of subresourceRange.mipLevels()) {
+    const [width, height, depth] = virtualMipSize(
+      params.dimension,
+      [t.textureWidth, t.textureHeight, t.textureDepth],
+      level
+    );
 
     const { ReadbackTypedArray, shaderType } = getComponentReadbackTraits(
-    getSingleDataType(format));
-
+      getSingleDataType(format)
+    );
 
     const componentOrder = rep.componentOrder;
     const componentCount = componentOrder.length;
@@ -39,108 +39,129 @@ subresourceRange) =>
     const indexExpression =
     componentCount === 1 ?
     componentOrder[0].toLowerCase() :
-    componentOrder.map(c => c.toLowerCase()).join('') + '[i]';
+    componentOrder.map((c) => c.toLowerCase()).join('') + '[i]';
 
-    const _xd = '_' + params.dimension;
+    const viewDimension =
+    t.isCompatibility && params.dimension === '2d' && texture.depthOrArrayLayers > 1 ?
+    '2d-array' :
+    params.dimension;
+    const _xd = `_${viewDimension.replace('-', '_')}`;
     const _multisampled = params.sampleCount > 1 ? '_multisampled' : '';
+    const texelIndexExpression =
+    viewDimension === '2d' ?
+    'vec2<i32>(GlobalInvocationID.xy)' :
+    viewDimension === '2d-array' ?
+    'vec2<i32>(GlobalInvocationID.xy), constants.layer' :
+    viewDimension === '3d' ?
+    'vec3<i32>(GlobalInvocationID.xyz)' :
+    viewDimension === '1d' ?
+    'i32(GlobalInvocationID.x)' :
+    unreachable();
     const computePipeline = t.device.createComputePipeline({
-      computeStage: {
+      layout: 'auto',
+      compute: {
         entryPoint: 'main',
         module: t.device.createShaderModule({
           code: `
-            [[block]] struct Constants {
-              [[offset(0)]] level : i32;
+            struct Constants {
+              level : i32,
+              layer : i32,
             };
 
-            [[group(0), binding(0)]] var<uniform> constants : Constants;
-            [[group(0), binding(1)]] var<uniform_constant> myTexture : texture${_multisampled}${_xd}<${shaderType}>;
+            @group(0) @binding(0) var<uniform> constants : Constants;
+            @group(0) @binding(1) var myTexture : texture${_multisampled}${_xd}<${shaderType}>;
 
-            [[block]] struct Result {
-              [[offset(0)]] values : [[stride(4)]] array<${shaderType}>;
+            struct Result {
+              values : array<${shaderType}>
             };
-            [[group(0), binding(3)]] var<storage_buffer> result : Result;
+            @group(0) @binding(3) var<storage, read_write> result : Result;
 
-            [[builtin(global_invocation_id)]] var<in> GlobalInvocationID : vec3<u32>;
+            @compute @workgroup_size(1)
+            fn main(@builtin(global_invocation_id) GlobalInvocationID : vec3<u32>) {
+              let flatIndex : u32 = ${componentCount}u * (
+                ${width}u * ${height}u * GlobalInvocationID.z +
+                ${width}u * GlobalInvocationID.y +
+                GlobalInvocationID.x
+              );
+              let texel : vec4<${shaderType}> = textureLoad(
+                myTexture, ${texelIndexExpression}, constants.level);
 
-            [[stage(compute)]]
-            fn main() -> void {
-              var flatIndex : u32 = ${width}u * GlobalInvocationID.y + GlobalInvocationID.x;
-              flatIndex = flatIndex * ${componentCount}u;
-              var texel : vec4<${shaderType}> = textureLoad(
-                myTexture, vec2<i32>(GlobalInvocationID.xy), constants.level);
-
-              for (var i : u32 = flatIndex; i < flatIndex + ${componentCount}u; i = i + 1) {
-                result.values[i] = texel.${indexExpression};
+              for (var i : u32 = 0u; i < ${componentCount}u; i = i + 1u) {
+                result.values[flatIndex + i] = texel.${indexExpression};
               }
-              return;
-            }` }) } });
+            }`
+        })
+      }
+    });
 
-
-
-
-    for (const slice of slices) {
-      const ubo = t.device.createBuffer({
+    for (const layer of layers) {
+      const ubo = t.createBufferTracked({
         mappedAtCreation: true,
-        size: 4,
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST });
-
-      new Int32Array(ubo.getMappedRange(), 0, 1)[0] = level;
+        size: 8,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+      });
+      new Int32Array(ubo.getMappedRange()).set([level, layer]);
       ubo.unmap();
 
       const byteLength =
-      width * height * ReadbackTypedArray.BYTES_PER_ELEMENT * rep.componentOrder.length;
-      const resultBuffer = t.device.createBuffer({
+      width * height * depth * ReadbackTypedArray.BYTES_PER_ELEMENT * rep.componentOrder.length;
+      const resultBuffer = t.createBufferTracked({
         size: byteLength,
-        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC });
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC
+      });
 
+      const viewDescriptor = {
+        ...(!t.isCompatibility && {
+          baseArrayLayer: layer,
+          arrayLayerCount: 1
+        }),
+        dimension: viewDimension
+      };
 
       const bindGroup = t.device.createBindGroup({
         layout: computePipeline.getBindGroupLayout(0),
         entries: [
         {
           binding: 0,
-          resource: { buffer: ubo } },
-
+          resource: { buffer: ubo }
+        },
         {
           binding: 1,
-          resource: texture.createView({
-            baseMipLevel: 0,
-            mipLevelCount: params.mipLevelCount,
-            baseArrayLayer: slice,
-            arrayLayerCount: 1 }) },
-
-
+          resource: texture.createView(viewDescriptor)
+        },
         {
           binding: 3,
           resource: {
-            buffer: resultBuffer } }] });
+            buffer: resultBuffer
+          }
+        }]
 
+      });
 
-
-
-
-      const commandEncoder = t.device.createCommandEncoder();
+      const commandEncoder = t.device.createCommandEncoder({ label: 'checkContentsBySampling' });
       const pass = commandEncoder.beginComputePass();
       pass.setPipeline(computePipeline);
       pass.setBindGroup(0, bindGroup);
-      pass.dispatch(width, height);
-      pass.endPass();
+      pass.dispatchWorkgroups(width, height, depth);
+      pass.end();
       t.queue.submit([commandEncoder.finish()]);
       ubo.destroy();
 
       const expectedValues = new ReadbackTypedArray(new ArrayBuffer(byteLength));
       const expectedState = t.stateToTexelComponents[state];
       let i = 0;
-      for (let h = 0; h < height; ++h) {
-        for (let w = 0; w < height; ++w) {
-          for (const c of rep.componentOrder) {
-            const value = expectedState[c];
-            assert(value !== undefined);
-            expectedValues[i++] = value;
+      for (let d = 0; d < depth; ++d) {
+        for (let h = 0; h < height; ++h) {
+          for (let w = 0; w < width; ++w) {
+            for (const c of rep.componentOrder) {
+              const value = expectedState[c];
+              assert(value !== undefined);
+              expectedValues[i++] = value;
+            }
           }
         }
       }
-      t.expectContents(resultBuffer, expectedValues);
+      t.expectGPUBufferValuesEqual(resultBuffer, expectedValues);
     }
   }
 };

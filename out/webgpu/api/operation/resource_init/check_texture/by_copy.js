@@ -1,8 +1,6 @@
 /**
 * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/import { assert } from '../../../../../common/framework/util/util.js';import {
-kEncodableTextureFormatInfo } from
-'../../../../capability_info.js';
+**/import { virtualMipSize } from '../../../../util/texture/base.js';
 
 
 export const checkContentsByBufferCopy = (
@@ -12,18 +10,16 @@ texture,
 state,
 subresourceRange) =>
 {
-  for (const { level: mipLevel, slice } of subresourceRange.each()) {
-    assert(params.dimension === '2d');
-    assert(params.format in kEncodableTextureFormatInfo);
+  for (const { level: mipLevel, layer } of subresourceRange.each()) {
     const format = params.format;
 
     t.expectSingleColor(texture, format, {
-      size: [t.textureWidth, t.textureHeight, 1],
+      size: [t.textureWidth, t.textureHeight, t.textureDepth],
       dimension: params.dimension,
-      slice,
-      layout: { mipLevel },
-      exp: t.stateToTexelComponents[state] });
-
+      slice: params.dimension === '2d' ? layer : 0,
+      layout: { mipLevel, aspect: params.aspect },
+      exp: t.stateToTexelComponents[state]
+    });
   }
 };
 
@@ -34,32 +30,35 @@ texture,
 state,
 subresourceRange) =>
 {
-  for (const { level, slice } of subresourceRange.each()) {
-    assert(params.dimension === '2d');
-    assert(params.format in kEncodableTextureFormatInfo);
+  for (const { level, layer } of subresourceRange.each()) {
     const format = params.format;
 
-    const width = t.textureWidth >> level;
-    const height = t.textureHeight >> level;
+    const [width, height, depth] = virtualMipSize(
+      params.dimension,
+      [t.textureWidth, t.textureHeight, t.textureDepth],
+      level
+    );
 
-    const dst = t.device.createTexture({
-      size: [width, height, 1],
+    const dst = t.createTextureTracked({
+      dimension: params.dimension,
+      size: [width, height, depth],
       format: params.format,
-      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC });
+      usage: GPUTextureUsage.COPY_DST | GPUTextureUsage.COPY_SRC
+    });
 
-
-    const commandEncoder = t.device.createCommandEncoder();
+    const commandEncoder = t.device.createCommandEncoder({ label: 'checkContentsByTextureCopy' });
     commandEncoder.copyTextureToTexture(
-    { texture, mipLevel: level, origin: { x: 0, y: 0, z: slice } },
-    { texture: dst, mipLevel: 0 },
-    { width, height, depth: 1 });
-
+      { texture, mipLevel: level, origin: { x: 0, y: 0, z: layer } },
+      { texture: dst, mipLevel: 0 },
+      { width, height, depthOrArrayLayers: depth }
+    );
     t.queue.submit([commandEncoder.finish()]);
 
     t.expectSingleColor(dst, format, {
-      size: [width, height, 1],
-      exp: t.stateToTexelComponents[state] });
-
+      size: [width, height, depth],
+      exp: t.stateToTexelComponents[state],
+      layout: { mipLevel: 0, aspect: params.aspect }
+    });
   }
 };
 //# sourceMappingURL=by_copy.js.map

@@ -2,8 +2,7 @@
 * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
 **/export const description = `
 Test the values of flags interfaces (e.g. GPUTextureUsage).
-`;import { poptions } from '../../../common/framework/params_builder.js';
-import { makeTestGroup } from '../../../common/framework/test_group.js';
+`;import { makeTestGroup } from '../../../common/framework/test_group.js';
 import { IDLTest } from '../idl_test.js';
 
 export const g = makeTestGroup(IDLTest);
@@ -18,14 +17,14 @@ const kBufferUsageExp = {
   UNIFORM: 0x0040,
   STORAGE: 0x0080,
   INDIRECT: 0x0100,
-  QUERY_RESOLVE: 0x0200 };
-
-g.test('BufferUsage,count').fn(t => {
+  QUERY_RESOLVE: 0x0200
+};
+g.test('BufferUsage,count').fn((t) => {
   t.assertMemberCount(GPUBufferUsage, kBufferUsageExp);
 });
 g.test('BufferUsage,values').
-params(poptions('key', Object.keys(kBufferUsageExp))).
-fn(t => {
+params((u) => u.combine('key', Object.keys(kBufferUsageExp))).
+fn((t) => {
   const { key } = t.params;
   t.assertMember(GPUBufferUsage, kBufferUsageExp, key);
 });
@@ -33,16 +32,16 @@ fn(t => {
 const kTextureUsageExp = {
   COPY_SRC: 0x01,
   COPY_DST: 0x02,
-  SAMPLED: 0x04,
-  STORAGE: 0x08,
-  RENDER_ATTACHMENT: 0x10 };
-
-g.test('TextureUsage,count').fn(t => {
+  TEXTURE_BINDING: 0x04,
+  STORAGE_BINDING: 0x08,
+  RENDER_ATTACHMENT: 0x10
+};
+g.test('TextureUsage,count').fn((t) => {
   t.assertMemberCount(GPUTextureUsage, kTextureUsageExp);
 });
 g.test('TextureUsage,values').
-params(poptions('key', Object.keys(kTextureUsageExp))).
-fn(t => {
+params((u) => u.combine('key', Object.keys(kTextureUsageExp))).
+fn((t) => {
   const { key } = t.params;
   t.assertMember(GPUTextureUsage, kTextureUsageExp, key);
 });
@@ -52,14 +51,14 @@ const kColorWriteExp = {
   GREEN: 0x2,
   BLUE: 0x4,
   ALPHA: 0x8,
-  ALL: 0xf };
-
-g.test('ColorWrite,count').fn(t => {
+  ALL: 0xf
+};
+g.test('ColorWrite,count').fn((t) => {
   t.assertMemberCount(GPUColorWrite, kColorWriteExp);
 });
 g.test('ColorWrite,values').
-params(poptions('key', Object.keys(kColorWriteExp))).
-fn(t => {
+params((u) => u.combine('key', Object.keys(kColorWriteExp))).
+fn((t) => {
   const { key } = t.params;
   t.assertMember(GPUColorWrite, kColorWriteExp, key);
 });
@@ -67,14 +66,14 @@ fn(t => {
 const kShaderStageExp = {
   VERTEX: 0x1,
   FRAGMENT: 0x2,
-  COMPUTE: 0x4 };
-
-g.test('ShaderStage,count').fn(t => {
+  COMPUTE: 0x4
+};
+g.test('ShaderStage,count').fn((t) => {
   t.assertMemberCount(GPUShaderStage, kShaderStageExp);
 });
 g.test('ShaderStage,values').
-params(poptions('key', Object.keys(kShaderStageExp))).
-fn(t => {
+params((u) => u.combine('key', Object.keys(kShaderStageExp))).
+fn((t) => {
   const { key } = t.params;
   t.assertMember(GPUShaderStage, kShaderStageExp, key);
 });

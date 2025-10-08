@@ -1,4 +1,4 @@
-// AUTO-GENERATED - DO NOT EDIT. See src/common/tools/gen_listings.ts.
+// AUTO-GENERATED - DO NOT EDIT. See src/common/tools/gen_listings_and_webworkers.ts.
 
 export const listing = [
   {
@@ -8,8 +8,7 @@ export const listing = [
   {
     "file": [
       "a"
-    ],
-    "description": "Description for a.spec.ts"
+    ]
   },
   {
     "file": [
@@ -21,8 +20,7 @@ export const listing = [
     "file": [
       "a",
       "b"
-    ],
-    "description": "Description for b.spec.ts"
+    ]
   },
   {
     "file": [
@@ -36,29 +34,30 @@ export const listing = [
       "a",
       "b",
       "c"
-    ],
-    "description": "Description for c.spec.ts"
+    ]
   },
   {
     "file": [
       "a",
       "b",
       "d"
-    ],
-    "description": "Description for d.spec.ts"
+    ]
   },
   {
     "file": [
       "file_depth_2",
       "in_single_child_dir",
       "r"
-    ],
-    "description": "Description for r.spec.ts"
+    ]
   },
   {
     "file": [
       "json"
-    ],
-    "description": "Description for a.spec.ts"
+    ]
+  },
+  {
+    "file": [
+      "subcases"
+    ]
   }
 ];

@@ -1,28 +1,38 @@
 import { Fixture } from '../../common/framework/fixture.js';
-import { assert } from '../../common/framework/util/util.js';
+import { getGPU } from '../../common/util/navigator_gpu.js';
+import { assert } from '../../common/util/util.js';
 
 interface UnknownObject {
   [k: string]: unknown;
 }
 
+/**
+ * Base fixture for testing the exposed interface is correct (without actually using WebGPU).
+ */
 export class IDLTest extends Fixture {
-  // TODO: add a helper to check prototype chains
+  override init(): Promise<void> {
+    // Ensure the GPU provider is initialized
+    getGPU(this.rec);
+    return Promise.resolve();
+  }
 
   /**
    * Asserts that a member of an IDL interface has the expected value.
    */
-  assertMember(act: UnknownObject, exp: UnknownObject, key: string) {
+  assertMember(act: object, exp: object, key: string) {
     assert(key in act, () => `Expected key ${key} missing`);
-    assert(act[key] === exp[key], () => `Value of [${key}] was ${act[key]}, expected ${exp[key]}`);
+    const actValue = (act as UnknownObject)[key];
+    const expValue = (exp as UnknownObject)[key];
+    assert(actValue === expValue, () => `Value of [${key}] was ${actValue}, expected ${expValue}`);
   }
 
   /**
    * Asserts that an IDL interface has the same number of keys as the
    *
-   * TODO: add a way to check for the types of keys with unknown values, like methods and attributes
-   * TODO: handle extensions
+   * MAINTENANCE_TODO: add a way to check for the types of keys with unknown values, like methods and attributes
+   * MAINTENANCE_TODO: handle extensions
    */
-  assertMemberCount(act: UnknownObject, exp: UnknownObject) {
+  assertMemberCount(act: object, exp: object) {
     const expKeys = Object.keys(exp);
     const actKeys = Object.keys(act);
     assert(

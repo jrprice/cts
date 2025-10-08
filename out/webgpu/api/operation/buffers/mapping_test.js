@@ -1,7 +1,7 @@
 /**
 * AUTO-GENERATED - DO NOT EDIT. Source: https://github.com/gpuweb/cts
-**/import { assert } from '../../../../common/framework/util/util.js';import { GPUTest } from '../../../gpu_test.js';
-export class MappingTest extends GPUTest {
+**/import { assert } from '../../../../common/util/util.js';import { AllFeaturesMaxLimitsGPUTest } from '../../../gpu_test.js';
+export class MappingTest extends AllFeaturesMaxLimitsGPUTest {
   checkMapWrite(
   buffer,
   offset,
@@ -18,7 +18,7 @@ export class MappingTest extends GPUTest {
     }
     buffer.unmap();
 
-    this.expectContents(buffer, expected, offset);
+    this.expectGPUBufferValuesEqual(buffer, expected, offset);
   }
 
   checkMapWriteZeroed(arrayBuffer, expectedSize) {
@@ -35,5 +35,6 @@ export class MappingTest extends GPUTest {
         break;
       }
     }
-  }}
+  }
+}
 //# sourceMappingURL=mapping_test.js.map
